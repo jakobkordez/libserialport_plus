@@ -8,62 +8,2358 @@
 // ignore_for_file: type=lint
 import 'dart:ffi' as ffi;
 
-/// Bindings for `src/flutter_serial.h`.
+/// Bindings for `src/libserialport/libserialport.h`.
 ///
 /// Regenerate bindings with `dart run ffigen --config ffigen.yaml`.
 ///
 class FlutterSerialBindings {
   /// Holds the symbol lookup function.
   final ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
-      _lookup;
+  _lookup;
 
   /// The symbols are looked up in [dynamicLibrary].
   FlutterSerialBindings(ffi.DynamicLibrary dynamicLibrary)
-      : _lookup = dynamicLibrary.lookup;
+    : _lookup = dynamicLibrary.lookup;
 
   /// The symbols are looked up with [lookup].
   FlutterSerialBindings.fromLookup(
-      ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
-          lookup)
-      : _lookup = lookup;
+    ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) lookup,
+  ) : _lookup = lookup;
 
-  /// A very short-lived native function.
+  /// Obtain a pointer to a new sp_port structure representing the named port.
   ///
-  /// For very short-lived functions, it is fine to call them on the main isolate.
-  /// They will block the Dart execution while running the native function, so
-  /// only do this for native functions which are guaranteed to be short-lived.
-  int sum(
-    int a,
-    int b,
+  /// The user should allocate a variable of type "struct sp_port *" and pass a
+  /// pointer to this to receive the result.
+  ///
+  /// The result should be freed after use by calling sp_free_port().
+  ///
+  /// @param[in] portname The OS-specific name of a serial port. Must not be NULL.
+  /// @param[out] port_ptr If any error is returned, the variable pointed to by
+  /// port_ptr will be set to NULL. Otherwise, it will be set
+  /// to point to the newly allocated port. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_get_port_by_name(
+    ffi.Pointer<ffi.Char> portname,
+    ffi.Pointer<ffi.Pointer<sp_port>> port_ptr,
   ) {
-    return _sum(
-      a,
-      b,
+    return sp_return.fromValue(_sp_get_port_by_name(portname, port_ptr));
+  }
+
+  late final _sp_get_port_by_namePtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<sp_port>>)
+    >
+  >('sp_get_port_by_name');
+  late final _sp_get_port_by_name =
+      _sp_get_port_by_namePtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<sp_port>>,
+            )
+          >();
+
+  /// Free a port structure obtained from sp_get_port_by_name() or sp_copy_port().
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  ///
+  /// @since 0.1.0
+  void sp_free_port(ffi.Pointer<sp_port> port) {
+    return _sp_free_port(port);
+  }
+
+  late final _sp_free_portPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<sp_port>)>>(
+        'sp_free_port',
+      );
+  late final _sp_free_port =
+      _sp_free_portPtr.asFunction<void Function(ffi.Pointer<sp_port>)>();
+
+  /// List the serial ports available on the system.
+  ///
+  /// The result obtained is an array of pointers to sp_port structures,
+  /// terminated by a NULL. The user should allocate a variable of type
+  /// "struct sp_port **" and pass a pointer to this to receive the result.
+  ///
+  /// The result should be freed after use by calling sp_free_port_list().
+  /// If a port from the list is to be used after freeing the list, it must be
+  /// copied first using sp_copy_port().
+  ///
+  /// @param[out] list_ptr If any error is returned, the variable pointed to by
+  /// list_ptr will be set to NULL. Otherwise, it will be set
+  /// to point to the newly allocated array. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_list_ports(
+    ffi.Pointer<ffi.Pointer<ffi.Pointer<sp_port>>> list_ptr,
+  ) {
+    return sp_return.fromValue(_sp_list_ports(list_ptr));
+  }
+
+  late final _sp_list_portsPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<ffi.Pointer<ffi.Pointer<sp_port>>>)
+    >
+  >('sp_list_ports');
+  late final _sp_list_ports =
+      _sp_list_portsPtr
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Pointer<ffi.Pointer<sp_port>>>)
+          >();
+
+  /// Make a new copy of an sp_port structure.
+  ///
+  /// The user should allocate a variable of type "struct sp_port *" and pass a
+  /// pointer to this to receive the result.
+  ///
+  /// The copy should be freed after use by calling sp_free_port().
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[out] copy_ptr If any error is returned, the variable pointed to by
+  /// copy_ptr will be set to NULL. Otherwise, it will be set
+  /// to point to the newly allocated copy. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_copy_port(
+    ffi.Pointer<sp_port> port,
+    ffi.Pointer<ffi.Pointer<sp_port>> copy_ptr,
+  ) {
+    return sp_return.fromValue(_sp_copy_port(port, copy_ptr));
+  }
+
+  late final _sp_copy_portPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Pointer<sp_port>>)
+    >
+  >('sp_copy_port');
+  late final _sp_copy_port =
+      _sp_copy_portPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<sp_port>,
+              ffi.Pointer<ffi.Pointer<sp_port>>,
+            )
+          >();
+
+  /// Free a port list obtained from sp_list_ports().
+  ///
+  /// This will also free all the sp_port structures referred to from the list;
+  /// any that are to be retained must be copied first using sp_copy_port().
+  ///
+  /// @param[in] ports Pointer to a list of port structures. Must not be NULL.
+  ///
+  /// @since 0.1.0
+  void sp_free_port_list(ffi.Pointer<ffi.Pointer<sp_port>> ports) {
+    return _sp_free_port_list(ports);
+  }
+
+  late final _sp_free_port_listPtr = _lookup<
+    ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Pointer<sp_port>>)>
+  >('sp_free_port_list');
+  late final _sp_free_port_list =
+      _sp_free_port_listPtr
+          .asFunction<void Function(ffi.Pointer<ffi.Pointer<sp_port>>)>();
+
+  /// Open the specified serial port.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[in] flags Flags to use when opening the serial port.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_open(ffi.Pointer<sp_port> port, sp_mode flags) {
+    return sp_return.fromValue(_sp_open(port, flags.value));
+  }
+
+  late final _sp_openPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.UnsignedInt)>
+  >('sp_open');
+  late final _sp_open =
+      _sp_openPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
+
+  /// Close the specified serial port.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_close(ffi.Pointer<sp_port> port) {
+    return sp_return.fromValue(_sp_close(port));
+  }
+
+  late final _sp_closePtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>)>>(
+        'sp_close',
+      );
+  late final _sp_close =
+      _sp_closePtr.asFunction<int Function(ffi.Pointer<sp_port>)>();
+
+  /// Get the name of a port.
+  ///
+  /// The name returned is whatever is normally used to refer to a port on the
+  /// current operating system; e.g. for Windows it will usually be a "COMn"
+  /// device name, and for Unix it will be a device path beginning with "/dev/".
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  ///
+  /// @return The port name, or NULL if an invalid port is passed. The name
+  /// string is part of the port structure and may not be used after
+  /// the port structure has been freed.
+  ///
+  /// @since 0.1.0
+  ffi.Pointer<ffi.Char> sp_get_port_name(ffi.Pointer<sp_port> port) {
+    return _sp_get_port_name(port);
+  }
+
+  late final _sp_get_port_namePtr = _lookup<
+    ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>
+  >('sp_get_port_name');
+  late final _sp_get_port_name =
+      _sp_get_port_namePtr
+          .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>();
+
+  /// Get a description for a port, to present to end user.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  ///
+  /// @return The port description, or NULL if an invalid port is passed.
+  /// The description string is part of the port structure and may not
+  /// be used after the port structure has been freed.
+  ///
+  /// @since 0.1.1
+  ffi.Pointer<ffi.Char> sp_get_port_description(ffi.Pointer<sp_port> port) {
+    return _sp_get_port_description(port);
+  }
+
+  late final _sp_get_port_descriptionPtr = _lookup<
+    ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>
+  >('sp_get_port_description');
+  late final _sp_get_port_description =
+      _sp_get_port_descriptionPtr
+          .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>();
+
+  /// Get the transport type used by a port.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  ///
+  /// @return The port transport type.
+  ///
+  /// @since 0.1.1
+  sp_transport sp_get_port_transport(ffi.Pointer<sp_port> port) {
+    return sp_transport.fromValue(_sp_get_port_transport(port));
+  }
+
+  late final _sp_get_port_transportPtr = _lookup<
+    ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<sp_port>)>
+  >('sp_get_port_transport');
+  late final _sp_get_port_transport =
+      _sp_get_port_transportPtr
+          .asFunction<int Function(ffi.Pointer<sp_port>)>();
+
+  /// Get the USB bus number and address on bus of a USB serial adapter port.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[out] usb_bus Pointer to a variable to store the USB bus.
+  /// Can be NULL (in that case it will be ignored).
+  /// @param[out] usb_address Pointer to a variable to store the USB address.
+  /// Can be NULL (in that case it will be ignored).
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.1
+  sp_return sp_get_port_usb_bus_address(
+    ffi.Pointer<sp_port> port,
+    ffi.Pointer<ffi.Int> usb_bus,
+    ffi.Pointer<ffi.Int> usb_address,
+  ) {
+    return sp_return.fromValue(
+      _sp_get_port_usb_bus_address(port, usb_bus, usb_address),
     );
   }
 
-  late final _sumPtr =
-      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Int, ffi.Int)>>('sum');
-  late final _sum = _sumPtr.asFunction<int Function(int, int)>();
+  late final _sp_get_port_usb_bus_addressPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(
+        ffi.Pointer<sp_port>,
+        ffi.Pointer<ffi.Int>,
+        ffi.Pointer<ffi.Int>,
+      )
+    >
+  >('sp_get_port_usb_bus_address');
+  late final _sp_get_port_usb_bus_address =
+      _sp_get_port_usb_bus_addressPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<sp_port>,
+              ffi.Pointer<ffi.Int>,
+              ffi.Pointer<ffi.Int>,
+            )
+          >();
 
-  /// A longer lived native function, which occupies the thread calling it.
+  /// Get the USB Vendor ID and Product ID of a USB serial adapter port.
   ///
-  /// Do not call these kind of native functions in the main isolate. They will
-  /// block Dart execution. This will cause dropped frames in Flutter applications.
-  /// Instead, call these native functions on a separate isolate.
-  int sum_long_running(
-    int a,
-    int b,
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[out] usb_vid Pointer to a variable to store the USB VID.
+  /// Can be NULL (in that case it will be ignored).
+  /// @param[out] usb_pid Pointer to a variable to store the USB PID.
+  /// Can be NULL (in that case it will be ignored).
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.1
+  sp_return sp_get_port_usb_vid_pid(
+    ffi.Pointer<sp_port> port,
+    ffi.Pointer<ffi.Int> usb_vid,
+    ffi.Pointer<ffi.Int> usb_pid,
   ) {
-    return _sum_long_running(
-      a,
-      b,
+    return sp_return.fromValue(
+      _sp_get_port_usb_vid_pid(port, usb_vid, usb_pid),
     );
   }
 
-  late final _sum_long_runningPtr =
-      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Int, ffi.Int)>>(
-          'sum_long_running');
-  late final _sum_long_running =
-      _sum_long_runningPtr.asFunction<int Function(int, int)>();
+  late final _sp_get_port_usb_vid_pidPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(
+        ffi.Pointer<sp_port>,
+        ffi.Pointer<ffi.Int>,
+        ffi.Pointer<ffi.Int>,
+      )
+    >
+  >('sp_get_port_usb_vid_pid');
+  late final _sp_get_port_usb_vid_pid =
+      _sp_get_port_usb_vid_pidPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<sp_port>,
+              ffi.Pointer<ffi.Int>,
+              ffi.Pointer<ffi.Int>,
+            )
+          >();
+
+  /// Get the USB manufacturer string of a USB serial adapter port.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  ///
+  /// @return The port manufacturer string, or NULL if an invalid port is passed.
+  /// The manufacturer string is part of the port structure and may not
+  /// be used after the port structure has been freed.
+  ///
+  /// @since 0.1.1
+  ffi.Pointer<ffi.Char> sp_get_port_usb_manufacturer(
+    ffi.Pointer<sp_port> port,
+  ) {
+    return _sp_get_port_usb_manufacturer(port);
+  }
+
+  late final _sp_get_port_usb_manufacturerPtr = _lookup<
+    ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>
+  >('sp_get_port_usb_manufacturer');
+  late final _sp_get_port_usb_manufacturer =
+      _sp_get_port_usb_manufacturerPtr
+          .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>();
+
+  /// Get the USB product string of a USB serial adapter port.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  ///
+  /// @return The port product string, or NULL if an invalid port is passed.
+  /// The product string is part of the port structure and may not be
+  /// used after the port structure has been freed.
+  ///
+  /// @since 0.1.1
+  ffi.Pointer<ffi.Char> sp_get_port_usb_product(ffi.Pointer<sp_port> port) {
+    return _sp_get_port_usb_product(port);
+  }
+
+  late final _sp_get_port_usb_productPtr = _lookup<
+    ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>
+  >('sp_get_port_usb_product');
+  late final _sp_get_port_usb_product =
+      _sp_get_port_usb_productPtr
+          .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>();
+
+  /// Get the USB serial number string of a USB serial adapter port.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  ///
+  /// @return The port serial number, or NULL if an invalid port is passed.
+  /// The serial number string is part of the port structure and may
+  /// not be used after the port structure has been freed.
+  ///
+  /// @since 0.1.1
+  ffi.Pointer<ffi.Char> sp_get_port_usb_serial(ffi.Pointer<sp_port> port) {
+    return _sp_get_port_usb_serial(port);
+  }
+
+  late final _sp_get_port_usb_serialPtr = _lookup<
+    ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>
+  >('sp_get_port_usb_serial');
+  late final _sp_get_port_usb_serial =
+      _sp_get_port_usb_serialPtr
+          .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>();
+
+  /// Get the MAC address of a Bluetooth serial adapter port.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  ///
+  /// @return The port MAC address, or NULL if an invalid port is passed.
+  /// The MAC address string is part of the port structure and may not
+  /// be used after the port structure has been freed.
+  ///
+  /// @since 0.1.1
+  ffi.Pointer<ffi.Char> sp_get_port_bluetooth_address(
+    ffi.Pointer<sp_port> port,
+  ) {
+    return _sp_get_port_bluetooth_address(port);
+  }
+
+  late final _sp_get_port_bluetooth_addressPtr = _lookup<
+    ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>
+  >('sp_get_port_bluetooth_address');
+  late final _sp_get_port_bluetooth_address =
+      _sp_get_port_bluetooth_addressPtr
+          .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>();
+
+  /// Get the operating system handle for a port.
+  ///
+  /// The type of the handle depends on the operating system. On Unix based
+  /// systems, the handle is a file descriptor of type "int". On Windows, the
+  /// handle is of type "HANDLE". The user should allocate a variable of the
+  /// appropriate type and pass a pointer to this to receive the result.
+  ///
+  /// To obtain a valid handle, the port must first be opened by calling
+  /// sp_open() using the same port structure.
+  ///
+  /// After the port is closed or the port structure freed, the handle may
+  /// no longer be valid.
+  ///
+  /// @warning This feature is provided so that programs may make use of
+  /// OS-specific functionality where desired. Doing so obviously
+  /// comes at a cost in portability. It also cannot be guaranteed
+  /// that direct usage of the OS handle will not conflict with the
+  /// library's own usage of the port. Be careful.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[out] result_ptr If any error is returned, the variable pointed to by
+  /// result_ptr will have unknown contents and should not
+  /// be used. Otherwise, it will be set to point to the
+  /// OS handle. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_get_port_handle(
+    ffi.Pointer<sp_port> port,
+    ffi.Pointer<ffi.Void> result_ptr,
+  ) {
+    return sp_return.fromValue(_sp_get_port_handle(port, result_ptr));
+  }
+
+  late final _sp_get_port_handlePtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>)
+    >
+  >('sp_get_port_handle');
+  late final _sp_get_port_handle =
+      _sp_get_port_handlePtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>)
+          >();
+
+  /// Allocate a port configuration structure.
+  ///
+  /// The user should allocate a variable of type "struct sp_port_config *" and
+  /// pass a pointer to this to receive the result. The variable will be updated
+  /// to point to the new configuration structure. The structure is opaque and
+  /// must be accessed via the functions provided.
+  ///
+  /// All parameters in the structure will be initialised to special values which
+  /// are ignored by sp_set_config().
+  ///
+  /// The structure should be freed after use by calling sp_free_config().
+  ///
+  /// @param[out] config_ptr If any error is returned, the variable pointed to by
+  /// config_ptr will be set to NULL. Otherwise, it will
+  /// be set to point to the allocated config structure.
+  /// Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_new_config(ffi.Pointer<ffi.Pointer<sp_port_config>> config_ptr) {
+    return sp_return.fromValue(_sp_new_config(config_ptr));
+  }
+
+  late final _sp_new_configPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<ffi.Pointer<sp_port_config>>)
+    >
+  >('sp_new_config');
+  late final _sp_new_config =
+      _sp_new_configPtr
+          .asFunction<int Function(ffi.Pointer<ffi.Pointer<sp_port_config>>)>();
+
+  /// Free a port configuration structure.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  ///
+  /// @since 0.1.0
+  void sp_free_config(ffi.Pointer<sp_port_config> config) {
+    return _sp_free_config(config);
+  }
+
+  late final _sp_free_configPtr = _lookup<
+    ffi.NativeFunction<ffi.Void Function(ffi.Pointer<sp_port_config>)>
+  >('sp_free_config');
+  late final _sp_free_config =
+      _sp_free_configPtr
+          .asFunction<void Function(ffi.Pointer<sp_port_config>)>();
+
+  /// Get the current configuration of the specified serial port.
+  ///
+  /// The user should allocate a configuration structure using sp_new_config()
+  /// and pass this as the config parameter. The configuration structure will
+  /// be updated with the port configuration.
+  ///
+  /// Any parameters that are configured with settings not recognised or
+  /// supported by libserialport, will be set to special values that are
+  /// ignored by sp_set_config().
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[out] config Pointer to a configuration structure that will hold
+  /// the result. Upon errors the contents of the config
+  /// struct will not be changed. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_get_config(
+    ffi.Pointer<sp_port> port,
+    ffi.Pointer<sp_port_config> config,
+  ) {
+    return sp_return.fromValue(_sp_get_config(port, config));
+  }
+
+  late final _sp_get_configPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<sp_port_config>)
+    >
+  >('sp_get_config');
+  late final _sp_get_config =
+      _sp_get_configPtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_port>, ffi.Pointer<sp_port_config>)
+          >();
+
+  /// Set the configuration for the specified serial port.
+  ///
+  /// For each parameter in the configuration, there is a special value (usually
+  /// -1, but see the documentation for each field). These values will be ignored
+  /// and the corresponding setting left unchanged on the port.
+  ///
+  /// Upon errors, the configuration of the serial port is unknown since
+  /// partial/incomplete config updates may have happened.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_config(
+    ffi.Pointer<sp_port> port,
+    ffi.Pointer<sp_port_config> config,
+  ) {
+    return sp_return.fromValue(_sp_set_config(port, config));
+  }
+
+  late final _sp_set_configPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<sp_port_config>)
+    >
+  >('sp_set_config');
+  late final _sp_set_config =
+      _sp_set_configPtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_port>, ffi.Pointer<sp_port_config>)
+          >();
+
+  /// Set the baud rate for the specified serial port.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[in] baudrate Baud rate in bits per second.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_baudrate(ffi.Pointer<sp_port> port, int baudrate) {
+    return sp_return.fromValue(_sp_set_baudrate(port, baudrate));
+  }
+
+  late final _sp_set_baudratePtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>
+  >('sp_set_baudrate');
+  late final _sp_set_baudrate =
+      _sp_set_baudratePtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
+
+  /// Get the baud rate from a port configuration.
+  ///
+  /// The user should allocate a variable of type int and
+  /// pass a pointer to this to receive the result.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[out] baudrate_ptr Pointer to a variable to store the result. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_get_config_baudrate(
+    ffi.Pointer<sp_port_config> config,
+    ffi.Pointer<ffi.Int> baudrate_ptr,
+  ) {
+    return sp_return.fromValue(_sp_get_config_baudrate(config, baudrate_ptr));
+  }
+
+  late final _sp_get_config_baudratePtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
+    >
+  >('sp_get_config_baudrate');
+  late final _sp_get_config_baudrate =
+      _sp_get_config_baudratePtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
+          >();
+
+  /// Set the baud rate in a port configuration.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[in] baudrate Baud rate in bits per second, or -1 to retain the current setting.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_config_baudrate(
+    ffi.Pointer<sp_port_config> config,
+    int baudrate,
+  ) {
+    return sp_return.fromValue(_sp_set_config_baudrate(config, baudrate));
+  }
+
+  late final _sp_set_config_baudratePtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Int)>
+  >('sp_set_config_baudrate');
+  late final _sp_set_config_baudrate =
+      _sp_set_config_baudratePtr
+          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+
+  /// Set the data bits for the specified serial port.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[in] bits Number of data bits.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_bits(ffi.Pointer<sp_port> port, int bits) {
+    return sp_return.fromValue(_sp_set_bits(port, bits));
+  }
+
+  late final _sp_set_bitsPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>
+  >('sp_set_bits');
+  late final _sp_set_bits =
+      _sp_set_bitsPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
+
+  /// Get the data bits from a port configuration.
+  ///
+  /// The user should allocate a variable of type int and
+  /// pass a pointer to this to receive the result.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[out] bits_ptr Pointer to a variable to store the result. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_get_config_bits(
+    ffi.Pointer<sp_port_config> config,
+    ffi.Pointer<ffi.Int> bits_ptr,
+  ) {
+    return sp_return.fromValue(_sp_get_config_bits(config, bits_ptr));
+  }
+
+  late final _sp_get_config_bitsPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
+    >
+  >('sp_get_config_bits');
+  late final _sp_get_config_bits =
+      _sp_get_config_bitsPtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
+          >();
+
+  /// Set the data bits in a port configuration.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[in] bits Number of data bits, or -1 to retain the current setting.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_config_bits(ffi.Pointer<sp_port_config> config, int bits) {
+    return sp_return.fromValue(_sp_set_config_bits(config, bits));
+  }
+
+  late final _sp_set_config_bitsPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Int)>
+  >('sp_set_config_bits');
+  late final _sp_set_config_bits =
+      _sp_set_config_bitsPtr
+          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+
+  /// Set the parity setting for the specified serial port.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[in] parity Parity setting.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_parity(ffi.Pointer<sp_port> port, sp_parity parity) {
+    return sp_return.fromValue(_sp_set_parity(port, parity.value));
+  }
+
+  late final _sp_set_parityPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>
+  >('sp_set_parity');
+  late final _sp_set_parity =
+      _sp_set_parityPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
+
+  /// Get the parity setting from a port configuration.
+  ///
+  /// The user should allocate a variable of type enum sp_parity and
+  /// pass a pointer to this to receive the result.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[out] parity_ptr Pointer to a variable to store the result. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_get_config_parity(
+    ffi.Pointer<sp_port_config> config,
+    ffi.Pointer<ffi.Int> parity_ptr,
+  ) {
+    return sp_return.fromValue(_sp_get_config_parity(config, parity_ptr));
+  }
+
+  late final _sp_get_config_parityPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
+    >
+  >('sp_get_config_parity');
+  late final _sp_get_config_parity =
+      _sp_get_config_parityPtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
+          >();
+
+  /// Set the parity setting in a port configuration.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[in] parity Parity setting, or -1 to retain the current setting.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_config_parity(
+    ffi.Pointer<sp_port_config> config,
+    sp_parity parity,
+  ) {
+    return sp_return.fromValue(_sp_set_config_parity(config, parity.value));
+  }
+
+  late final _sp_set_config_parityPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Int)>
+  >('sp_set_config_parity');
+  late final _sp_set_config_parity =
+      _sp_set_config_parityPtr
+          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+
+  /// Set the stop bits for the specified serial port.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[in] stopbits Number of stop bits.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_stopbits(ffi.Pointer<sp_port> port, int stopbits) {
+    return sp_return.fromValue(_sp_set_stopbits(port, stopbits));
+  }
+
+  late final _sp_set_stopbitsPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>
+  >('sp_set_stopbits');
+  late final _sp_set_stopbits =
+      _sp_set_stopbitsPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
+
+  /// Get the stop bits from a port configuration.
+  ///
+  /// The user should allocate a variable of type int and
+  /// pass a pointer to this to receive the result.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[out] stopbits_ptr Pointer to a variable to store the result. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_get_config_stopbits(
+    ffi.Pointer<sp_port_config> config,
+    ffi.Pointer<ffi.Int> stopbits_ptr,
+  ) {
+    return sp_return.fromValue(_sp_get_config_stopbits(config, stopbits_ptr));
+  }
+
+  late final _sp_get_config_stopbitsPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
+    >
+  >('sp_get_config_stopbits');
+  late final _sp_get_config_stopbits =
+      _sp_get_config_stopbitsPtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
+          >();
+
+  /// Set the stop bits in a port configuration.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[in] stopbits Number of stop bits, or -1 to retain the current setting.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_config_stopbits(
+    ffi.Pointer<sp_port_config> config,
+    int stopbits,
+  ) {
+    return sp_return.fromValue(_sp_set_config_stopbits(config, stopbits));
+  }
+
+  late final _sp_set_config_stopbitsPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Int)>
+  >('sp_set_config_stopbits');
+  late final _sp_set_config_stopbits =
+      _sp_set_config_stopbitsPtr
+          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+
+  /// Set the RTS pin behaviour for the specified serial port.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[in] rts RTS pin mode.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_rts(ffi.Pointer<sp_port> port, sp_rts rts) {
+    return sp_return.fromValue(_sp_set_rts(port, rts.value));
+  }
+
+  late final _sp_set_rtsPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>
+  >('sp_set_rts');
+  late final _sp_set_rts =
+      _sp_set_rtsPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
+
+  /// Get the RTS pin behaviour from a port configuration.
+  ///
+  /// The user should allocate a variable of type enum sp_rts and
+  /// pass a pointer to this to receive the result.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[out] rts_ptr Pointer to a variable to store the result. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_get_config_rts(
+    ffi.Pointer<sp_port_config> config,
+    ffi.Pointer<ffi.Int> rts_ptr,
+  ) {
+    return sp_return.fromValue(_sp_get_config_rts(config, rts_ptr));
+  }
+
+  late final _sp_get_config_rtsPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
+    >
+  >('sp_get_config_rts');
+  late final _sp_get_config_rts =
+      _sp_get_config_rtsPtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
+          >();
+
+  /// Set the RTS pin behaviour in a port configuration.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[in] rts RTS pin mode, or -1 to retain the current setting.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_config_rts(ffi.Pointer<sp_port_config> config, sp_rts rts) {
+    return sp_return.fromValue(_sp_set_config_rts(config, rts.value));
+  }
+
+  late final _sp_set_config_rtsPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Int)>
+  >('sp_set_config_rts');
+  late final _sp_set_config_rts =
+      _sp_set_config_rtsPtr
+          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+
+  /// Set the CTS pin behaviour for the specified serial port.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[in] cts CTS pin mode.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_cts(ffi.Pointer<sp_port> port, sp_cts cts) {
+    return sp_return.fromValue(_sp_set_cts(port, cts.value));
+  }
+
+  late final _sp_set_ctsPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>
+  >('sp_set_cts');
+  late final _sp_set_cts =
+      _sp_set_ctsPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
+
+  /// Get the CTS pin behaviour from a port configuration.
+  ///
+  /// The user should allocate a variable of type enum sp_cts and
+  /// pass a pointer to this to receive the result.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[out] cts_ptr Pointer to a variable to store the result. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_get_config_cts(
+    ffi.Pointer<sp_port_config> config,
+    ffi.Pointer<ffi.Int> cts_ptr,
+  ) {
+    return sp_return.fromValue(_sp_get_config_cts(config, cts_ptr));
+  }
+
+  late final _sp_get_config_ctsPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
+    >
+  >('sp_get_config_cts');
+  late final _sp_get_config_cts =
+      _sp_get_config_ctsPtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
+          >();
+
+  /// Set the CTS pin behaviour in a port configuration.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[in] cts CTS pin mode, or -1 to retain the current setting.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_config_cts(ffi.Pointer<sp_port_config> config, sp_cts cts) {
+    return sp_return.fromValue(_sp_set_config_cts(config, cts.value));
+  }
+
+  late final _sp_set_config_ctsPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Int)>
+  >('sp_set_config_cts');
+  late final _sp_set_config_cts =
+      _sp_set_config_ctsPtr
+          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+
+  /// Set the DTR pin behaviour for the specified serial port.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[in] dtr DTR pin mode.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_dtr(ffi.Pointer<sp_port> port, sp_dtr dtr) {
+    return sp_return.fromValue(_sp_set_dtr(port, dtr.value));
+  }
+
+  late final _sp_set_dtrPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>
+  >('sp_set_dtr');
+  late final _sp_set_dtr =
+      _sp_set_dtrPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
+
+  /// Get the DTR pin behaviour from a port configuration.
+  ///
+  /// The user should allocate a variable of type enum sp_dtr and
+  /// pass a pointer to this to receive the result.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[out] dtr_ptr Pointer to a variable to store the result. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_get_config_dtr(
+    ffi.Pointer<sp_port_config> config,
+    ffi.Pointer<ffi.Int> dtr_ptr,
+  ) {
+    return sp_return.fromValue(_sp_get_config_dtr(config, dtr_ptr));
+  }
+
+  late final _sp_get_config_dtrPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
+    >
+  >('sp_get_config_dtr');
+  late final _sp_get_config_dtr =
+      _sp_get_config_dtrPtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
+          >();
+
+  /// Set the DTR pin behaviour in a port configuration.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[in] dtr DTR pin mode, or -1 to retain the current setting.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_config_dtr(ffi.Pointer<sp_port_config> config, sp_dtr dtr) {
+    return sp_return.fromValue(_sp_set_config_dtr(config, dtr.value));
+  }
+
+  late final _sp_set_config_dtrPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Int)>
+  >('sp_set_config_dtr');
+  late final _sp_set_config_dtr =
+      _sp_set_config_dtrPtr
+          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+
+  /// Set the DSR pin behaviour for the specified serial port.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[in] dsr DSR pin mode.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_dsr(ffi.Pointer<sp_port> port, sp_dsr dsr) {
+    return sp_return.fromValue(_sp_set_dsr(port, dsr.value));
+  }
+
+  late final _sp_set_dsrPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>
+  >('sp_set_dsr');
+  late final _sp_set_dsr =
+      _sp_set_dsrPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
+
+  /// Get the DSR pin behaviour from a port configuration.
+  ///
+  /// The user should allocate a variable of type enum sp_dsr and
+  /// pass a pointer to this to receive the result.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[out] dsr_ptr Pointer to a variable to store the result. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_get_config_dsr(
+    ffi.Pointer<sp_port_config> config,
+    ffi.Pointer<ffi.Int> dsr_ptr,
+  ) {
+    return sp_return.fromValue(_sp_get_config_dsr(config, dsr_ptr));
+  }
+
+  late final _sp_get_config_dsrPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
+    >
+  >('sp_get_config_dsr');
+  late final _sp_get_config_dsr =
+      _sp_get_config_dsrPtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
+          >();
+
+  /// Set the DSR pin behaviour in a port configuration.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[in] dsr DSR pin mode, or -1 to retain the current setting.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_config_dsr(ffi.Pointer<sp_port_config> config, sp_dsr dsr) {
+    return sp_return.fromValue(_sp_set_config_dsr(config, dsr.value));
+  }
+
+  late final _sp_set_config_dsrPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Int)>
+  >('sp_set_config_dsr');
+  late final _sp_set_config_dsr =
+      _sp_set_config_dsrPtr
+          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+
+  /// Set the XON/XOFF configuration for the specified serial port.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[in] xon_xoff XON/XOFF mode.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_xon_xoff(ffi.Pointer<sp_port> port, sp_xonxoff xon_xoff) {
+    return sp_return.fromValue(_sp_set_xon_xoff(port, xon_xoff.value));
+  }
+
+  late final _sp_set_xon_xoffPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>
+  >('sp_set_xon_xoff');
+  late final _sp_set_xon_xoff =
+      _sp_set_xon_xoffPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
+
+  /// Get the XON/XOFF configuration from a port configuration.
+  ///
+  /// The user should allocate a variable of type enum sp_xonxoff and
+  /// pass a pointer to this to receive the result.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[out] xon_xoff_ptr Pointer to a variable to store the result. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_get_config_xon_xoff(
+    ffi.Pointer<sp_port_config> config,
+    ffi.Pointer<ffi.Int> xon_xoff_ptr,
+  ) {
+    return sp_return.fromValue(_sp_get_config_xon_xoff(config, xon_xoff_ptr));
+  }
+
+  late final _sp_get_config_xon_xoffPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
+    >
+  >('sp_get_config_xon_xoff');
+  late final _sp_get_config_xon_xoff =
+      _sp_get_config_xon_xoffPtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
+          >();
+
+  /// Set the XON/XOFF configuration in a port configuration.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[in] xon_xoff XON/XOFF mode, or -1 to retain the current setting.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_config_xon_xoff(
+    ffi.Pointer<sp_port_config> config,
+    sp_xonxoff xon_xoff,
+  ) {
+    return sp_return.fromValue(_sp_set_config_xon_xoff(config, xon_xoff.value));
+  }
+
+  late final _sp_set_config_xon_xoffPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Int)>
+  >('sp_set_config_xon_xoff');
+  late final _sp_set_config_xon_xoff =
+      _sp_set_config_xon_xoffPtr
+          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+
+  /// Set the flow control type in a port configuration.
+  ///
+  /// This function is a wrapper that sets the RTS, CTS, DTR, DSR and
+  /// XON/XOFF settings as necessary for the specified flow control
+  /// type. For more fine-grained control of these settings, use their
+  /// individual configuration functions.
+  ///
+  /// @param[in] config Pointer to a configuration structure. Must not be NULL.
+  /// @param[in] flowcontrol Flow control setting to use.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_config_flowcontrol(
+    ffi.Pointer<sp_port_config> config,
+    sp_flowcontrol flowcontrol,
+  ) {
+    return sp_return.fromValue(
+      _sp_set_config_flowcontrol(config, flowcontrol.value),
+    );
+  }
+
+  late final _sp_set_config_flowcontrolPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.UnsignedInt)
+    >
+  >('sp_set_config_flowcontrol');
+  late final _sp_set_config_flowcontrol =
+      _sp_set_config_flowcontrolPtr
+          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+
+  /// Set the flow control type for the specified serial port.
+  ///
+  /// This function is a wrapper that sets the RTS, CTS, DTR, DSR and
+  /// XON/XOFF settings as necessary for the specified flow control
+  /// type. For more fine-grained control of these settings, use their
+  /// individual configuration functions.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[in] flowcontrol Flow control setting to use.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_set_flowcontrol(
+    ffi.Pointer<sp_port> port,
+    sp_flowcontrol flowcontrol,
+  ) {
+    return sp_return.fromValue(_sp_set_flowcontrol(port, flowcontrol.value));
+  }
+
+  late final _sp_set_flowcontrolPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.UnsignedInt)>
+  >('sp_set_flowcontrol');
+  late final _sp_set_flowcontrol =
+      _sp_set_flowcontrolPtr
+          .asFunction<int Function(ffi.Pointer<sp_port>, int)>();
+
+  /// Read bytes from the specified serial port, blocking until complete.
+  ///
+  /// @warning If your program runs on Unix, defines its own signal handlers, and
+  /// needs to abort blocking reads when these are called, then you
+  /// should not use this function. It repeats system calls that return
+  /// with EINTR. To be able to abort a read from a signal handler, you
+  /// should implement your own blocking read using sp_nonblocking_read()
+  /// together with a blocking method that makes sense for your program.
+  /// E.g. you can obtain the file descriptor for an open port using
+  /// sp_get_port_handle() and use this to call select() or pselect(),
+  /// with appropriate arrangements to return if a signal is received.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[out] buf Buffer in which to store the bytes read. Must not be NULL.
+  /// @param[in] count Requested number of bytes to read.
+  /// @param[in] timeout_ms Timeout in milliseconds, or zero to wait indefinitely.
+  ///
+  /// @return The number of bytes read on success, or a negative error code. If
+  /// the number of bytes returned is less than that requested, the
+  /// timeout was reached before the requested number of bytes was
+  /// available. If timeout is zero, the function will always return
+  /// either the requested number of bytes or a negative error code.
+  ///
+  /// @since 0.1.0
+  sp_return sp_blocking_read(
+    ffi.Pointer<sp_port> port,
+    ffi.Pointer<ffi.Void> buf,
+    int count,
+    int timeout_ms,
+  ) {
+    return sp_return.fromValue(_sp_blocking_read(port, buf, count, timeout_ms));
+  }
+
+  late final _sp_blocking_readPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(
+        ffi.Pointer<sp_port>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Size,
+        ffi.UnsignedInt,
+      )
+    >
+  >('sp_blocking_read');
+  late final _sp_blocking_read =
+      _sp_blocking_readPtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, int, int)
+          >();
+
+  /// Read bytes from the specified serial port, returning as soon as any data is
+  /// available.
+  ///
+  /// @warning If your program runs on Unix, defines its own signal handlers, and
+  /// needs to abort blocking reads when these are called, then you
+  /// should not use this function. It repeats system calls that return
+  /// with EINTR. To be able to abort a read from a signal handler, you
+  /// should implement your own blocking read using sp_nonblocking_read()
+  /// together with a blocking method that makes sense for your program.
+  /// E.g. you can obtain the file descriptor for an open port using
+  /// sp_get_port_handle() and use this to call select() or pselect(),
+  /// with appropriate arrangements to return if a signal is received.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[out] buf Buffer in which to store the bytes read. Must not be NULL.
+  /// @param[in] count Maximum number of bytes to read. Must not be zero.
+  /// @param[in] timeout_ms Timeout in milliseconds, or zero to wait indefinitely.
+  ///
+  /// @return The number of bytes read on success, or a negative error code. If
+  /// the result is zero, the timeout was reached before any bytes were
+  /// available. If timeout_ms is zero, the function will always return
+  /// either at least one byte, or a negative error code.
+  ///
+  /// @since 0.1.1
+  sp_return sp_blocking_read_next(
+    ffi.Pointer<sp_port> port,
+    ffi.Pointer<ffi.Void> buf,
+    int count,
+    int timeout_ms,
+  ) {
+    return sp_return.fromValue(
+      _sp_blocking_read_next(port, buf, count, timeout_ms),
+    );
+  }
+
+  late final _sp_blocking_read_nextPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(
+        ffi.Pointer<sp_port>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Size,
+        ffi.UnsignedInt,
+      )
+    >
+  >('sp_blocking_read_next');
+  late final _sp_blocking_read_next =
+      _sp_blocking_read_nextPtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, int, int)
+          >();
+
+  /// Read bytes from the specified serial port, without blocking.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[out] buf Buffer in which to store the bytes read. Must not be NULL.
+  /// @param[in] count Maximum number of bytes to read.
+  ///
+  /// @return The number of bytes read on success, or a negative error code. The
+  /// number of bytes returned may be any number from zero to the maximum
+  /// that was requested.
+  ///
+  /// @since 0.1.0
+  sp_return sp_nonblocking_read(
+    ffi.Pointer<sp_port> port,
+    ffi.Pointer<ffi.Void> buf,
+    int count,
+  ) {
+    return sp_return.fromValue(_sp_nonblocking_read(port, buf, count));
+  }
+
+  late final _sp_nonblocking_readPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, ffi.Size)
+    >
+  >('sp_nonblocking_read');
+  late final _sp_nonblocking_read =
+      _sp_nonblocking_readPtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, int)
+          >();
+
+  /// Write bytes to the specified serial port, blocking until complete.
+  ///
+  /// Note that this function only ensures that the accepted bytes have been
+  /// written to the OS; they may be held in driver or hardware buffers and not
+  /// yet physically transmitted. To check whether all written bytes have actually
+  /// been transmitted, use the sp_output_waiting() function. To wait until all
+  /// written bytes have actually been transmitted, use the sp_drain() function.
+  ///
+  /// @warning If your program runs on Unix, defines its own signal handlers, and
+  /// needs to abort blocking writes when these are called, then you
+  /// should not use this function. It repeats system calls that return
+  /// with EINTR. To be able to abort a write from a signal handler, you
+  /// should implement your own blocking write using sp_nonblocking_write()
+  /// together with a blocking method that makes sense for your program.
+  /// E.g. you can obtain the file descriptor for an open port using
+  /// sp_get_port_handle() and use this to call select() or pselect(),
+  /// with appropriate arrangements to return if a signal is received.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[in] buf Buffer containing the bytes to write. Must not be NULL.
+  /// @param[in] count Requested number of bytes to write.
+  /// @param[in] timeout_ms Timeout in milliseconds, or zero to wait indefinitely.
+  ///
+  /// @return The number of bytes written on success, or a negative error code.
+  /// If the number of bytes returned is less than that requested, the
+  /// timeout was reached before the requested number of bytes was
+  /// written. If timeout is zero, the function will always return
+  /// either the requested number of bytes or a negative error code. In
+  /// the event of an error there is no way to determine how many bytes
+  /// were sent before the error occurred.
+  ///
+  /// @since 0.1.0
+  sp_return sp_blocking_write(
+    ffi.Pointer<sp_port> port,
+    ffi.Pointer<ffi.Void> buf,
+    int count,
+    int timeout_ms,
+  ) {
+    return sp_return.fromValue(
+      _sp_blocking_write(port, buf, count, timeout_ms),
+    );
+  }
+
+  late final _sp_blocking_writePtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(
+        ffi.Pointer<sp_port>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Size,
+        ffi.UnsignedInt,
+      )
+    >
+  >('sp_blocking_write');
+  late final _sp_blocking_write =
+      _sp_blocking_writePtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, int, int)
+          >();
+
+  /// Write bytes to the specified serial port, without blocking.
+  ///
+  /// Note that this function only ensures that the accepted bytes have been
+  /// written to the OS; they may be held in driver or hardware buffers and not
+  /// yet physically transmitted. To check whether all written bytes have actually
+  /// been transmitted, use the sp_output_waiting() function. To wait until all
+  /// written bytes have actually been transmitted, use the sp_drain() function.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[in] buf Buffer containing the bytes to write. Must not be NULL.
+  /// @param[in] count Maximum number of bytes to write.
+  ///
+  /// @return The number of bytes written on success, or a negative error code.
+  /// The number of bytes returned may be any number from zero to the
+  /// maximum that was requested.
+  ///
+  /// @since 0.1.0
+  sp_return sp_nonblocking_write(
+    ffi.Pointer<sp_port> port,
+    ffi.Pointer<ffi.Void> buf,
+    int count,
+  ) {
+    return sp_return.fromValue(_sp_nonblocking_write(port, buf, count));
+  }
+
+  late final _sp_nonblocking_writePtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, ffi.Size)
+    >
+  >('sp_nonblocking_write');
+  late final _sp_nonblocking_write =
+      _sp_nonblocking_writePtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, int)
+          >();
+
+  /// Gets the number of bytes waiting in the input buffer.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  ///
+  /// @return Number of bytes waiting on success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_input_waiting(ffi.Pointer<sp_port> port) {
+    return sp_return.fromValue(_sp_input_waiting(port));
+  }
+
+  late final _sp_input_waitingPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>)>>(
+        'sp_input_waiting',
+      );
+  late final _sp_input_waiting =
+      _sp_input_waitingPtr.asFunction<int Function(ffi.Pointer<sp_port>)>();
+
+  /// Gets the number of bytes waiting in the output buffer.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  ///
+  /// @return Number of bytes waiting on success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_output_waiting(ffi.Pointer<sp_port> port) {
+    return sp_return.fromValue(_sp_output_waiting(port));
+  }
+
+  late final _sp_output_waitingPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>)>>(
+        'sp_output_waiting',
+      );
+  late final _sp_output_waiting =
+      _sp_output_waitingPtr.asFunction<int Function(ffi.Pointer<sp_port>)>();
+
+  /// Flush serial port buffers. Data in the selected buffer(s) is discarded.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[in] buffers Which buffer(s) to flush.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_flush(ffi.Pointer<sp_port> port, sp_buffer buffers) {
+    return sp_return.fromValue(_sp_flush(port, buffers.value));
+  }
+
+  late final _sp_flushPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.UnsignedInt)>
+  >('sp_flush');
+  late final _sp_flush =
+      _sp_flushPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
+
+  /// Wait for buffered data to be transmitted.
+  ///
+  /// @warning If your program runs on Unix, defines its own signal handlers, and
+  /// needs to abort draining the output buffer when when these are
+  /// called, then you should not use this function. It repeats system
+  /// calls that return with EINTR. To be able to abort a drain from a
+  /// signal handler, you would need to implement your own blocking
+  /// drain by polling the result of sp_output_waiting().
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_drain(ffi.Pointer<sp_port> port) {
+    return sp_return.fromValue(_sp_drain(port));
+  }
+
+  late final _sp_drainPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>)>>(
+        'sp_drain',
+      );
+  late final _sp_drain =
+      _sp_drainPtr.asFunction<int Function(ffi.Pointer<sp_port>)>();
+
+  /// Allocate storage for a set of events.
+  ///
+  /// The user should allocate a variable of type struct sp_event_set *,
+  /// then pass a pointer to this variable to receive the result.
+  ///
+  /// The result should be freed after use by calling sp_free_event_set().
+  ///
+  /// @param[out] result_ptr If any error is returned, the variable pointed to by
+  /// result_ptr will be set to NULL. Otherwise, it will
+  /// be set to point to the event set. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_new_event_set(
+    ffi.Pointer<ffi.Pointer<sp_event_set>> result_ptr,
+  ) {
+    return sp_return.fromValue(_sp_new_event_set(result_ptr));
+  }
+
+  late final _sp_new_event_setPtr = _lookup<
+    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Pointer<sp_event_set>>)>
+  >('sp_new_event_set');
+  late final _sp_new_event_set =
+      _sp_new_event_setPtr
+          .asFunction<int Function(ffi.Pointer<ffi.Pointer<sp_event_set>>)>();
+
+  /// Add events to a struct sp_event_set for a given port.
+  ///
+  /// The port must first be opened by calling sp_open() using the same port
+  /// structure.
+  ///
+  /// After the port is closed or the port structure freed, the results may
+  /// no longer be valid.
+  ///
+  /// @param[in,out] event_set Event set to update. Must not be NULL.
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[in] mask Bitmask of events to be waited for.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_add_port_events(
+    ffi.Pointer<sp_event_set> event_set,
+    ffi.Pointer<sp_port> port,
+    sp_event mask,
+  ) {
+    return sp_return.fromValue(
+      _sp_add_port_events(event_set, port, mask.value),
+    );
+  }
+
+  late final _sp_add_port_eventsPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(
+        ffi.Pointer<sp_event_set>,
+        ffi.Pointer<sp_port>,
+        ffi.UnsignedInt,
+      )
+    >
+  >('sp_add_port_events');
+  late final _sp_add_port_events =
+      _sp_add_port_eventsPtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_event_set>, ffi.Pointer<sp_port>, int)
+          >();
+
+  /// Wait for any of a set of events to occur.
+  ///
+  /// @param[in] event_set Event set to wait on. Must not be NULL.
+  /// @param[in] timeout_ms Timeout in milliseconds, or zero to wait indefinitely.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_wait(ffi.Pointer<sp_event_set> event_set, int timeout_ms) {
+    return sp_return.fromValue(_sp_wait(event_set, timeout_ms));
+  }
+
+  late final _sp_waitPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<sp_event_set>, ffi.UnsignedInt)
+    >
+  >('sp_wait');
+  late final _sp_wait =
+      _sp_waitPtr.asFunction<int Function(ffi.Pointer<sp_event_set>, int)>();
+
+  /// Free a structure allocated by sp_new_event_set().
+  ///
+  /// @param[in] event_set Event set to free. Must not be NULL.
+  ///
+  /// @since 0.1.0
+  void sp_free_event_set(ffi.Pointer<sp_event_set> event_set) {
+    return _sp_free_event_set(event_set);
+  }
+
+  late final _sp_free_event_setPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<sp_event_set>)>>(
+        'sp_free_event_set',
+      );
+  late final _sp_free_event_set =
+      _sp_free_event_setPtr
+          .asFunction<void Function(ffi.Pointer<sp_event_set>)>();
+
+  /// Gets the status of the control signals for the specified port.
+  ///
+  /// The user should allocate a variable of type "enum sp_signal" and pass a
+  /// pointer to this variable to receive the result. The result is a bitmask
+  /// in which individual signals can be checked by bitwise OR with values of
+  /// the sp_signal enum.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  /// @param[out] signal_mask Pointer to a variable to receive the result.
+  /// Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_get_signals(
+    ffi.Pointer<sp_port> port,
+    ffi.Pointer<ffi.UnsignedInt> signal_mask,
+  ) {
+    return sp_return.fromValue(_sp_get_signals(port, signal_mask));
+  }
+
+  late final _sp_get_signalsPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.UnsignedInt>)
+    >
+  >('sp_get_signals');
+  late final _sp_get_signals =
+      _sp_get_signalsPtr
+          .asFunction<
+            int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.UnsignedInt>)
+          >();
+
+  /// Put the port transmit line into the break state.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_start_break(ffi.Pointer<sp_port> port) {
+    return sp_return.fromValue(_sp_start_break(port));
+  }
+
+  late final _sp_start_breakPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>)>>(
+        'sp_start_break',
+      );
+  late final _sp_start_break =
+      _sp_start_breakPtr.asFunction<int Function(ffi.Pointer<sp_port>)>();
+
+  /// Take the port transmit line out of the break state.
+  ///
+  /// @param[in] port Pointer to a port structure. Must not be NULL.
+  ///
+  /// @return SP_OK upon success, a negative error code otherwise.
+  ///
+  /// @since 0.1.0
+  sp_return sp_end_break(ffi.Pointer<sp_port> port) {
+    return sp_return.fromValue(_sp_end_break(port));
+  }
+
+  late final _sp_end_breakPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>)>>(
+        'sp_end_break',
+      );
+  late final _sp_end_break =
+      _sp_end_breakPtr.asFunction<int Function(ffi.Pointer<sp_port>)>();
+
+  /// Get the error code for a failed operation.
+  ///
+  /// In order to obtain the correct result, this function should be called
+  /// straight after the failure, before executing any other system operations.
+  /// The result is thread-specific, and only valid when called immediately
+  /// after a previous call returning SP_ERR_FAIL.
+  ///
+  /// @return The system's numeric code for the error that caused the last
+  /// operation to fail.
+  ///
+  /// @since 0.1.0
+  int sp_last_error_code() {
+    return _sp_last_error_code();
+  }
+
+  late final _sp_last_error_codePtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>('sp_last_error_code');
+  late final _sp_last_error_code =
+      _sp_last_error_codePtr.asFunction<int Function()>();
+
+  /// Get the error message for a failed operation.
+  ///
+  /// In order to obtain the correct result, this function should be called
+  /// straight after the failure, before executing other system operations.
+  /// The result is thread-specific, and only valid when called immediately
+  /// after a previous call returning SP_ERR_FAIL.
+  ///
+  /// @return The system's message for the error that caused the last
+  /// operation to fail. This string may be allocated by the function,
+  /// and should be freed after use by calling sp_free_error_message().
+  ///
+  /// @since 0.1.0
+  ffi.Pointer<ffi.Char> sp_last_error_message() {
+    return _sp_last_error_message();
+  }
+
+  late final _sp_last_error_messagePtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
+        'sp_last_error_message',
+      );
+  late final _sp_last_error_message =
+      _sp_last_error_messagePtr.asFunction<ffi.Pointer<ffi.Char> Function()>();
+
+  /// Free an error message returned by sp_last_error_message().
+  ///
+  /// @param[in] message The error message string to free. Must not be NULL.
+  ///
+  /// @since 0.1.0
+  void sp_free_error_message(ffi.Pointer<ffi.Char> message) {
+    return _sp_free_error_message(message);
+  }
+
+  late final _sp_free_error_messagePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+        'sp_free_error_message',
+      );
+  late final _sp_free_error_message =
+      _sp_free_error_messagePtr
+          .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
+  /// Set the handler function for library debugging messages.
+  ///
+  /// Debugging messages are generated by the library during each operation,
+  /// to help in diagnosing problems. The handler will be called for each
+  /// message. The handler can be set to NULL to ignore all debug messages.
+  ///
+  /// The handler function should accept a format string and variable length
+  /// argument list, in the same manner as e.g. printf().
+  ///
+  /// The default handler is sp_default_debug_handler().
+  ///
+  /// @param[in] handler The handler function to use. Can be NULL (in that case
+  /// all debug messages will be ignored).
+  ///
+  /// @since 0.1.0
+  void sp_set_debug_handler(
+    ffi.Pointer<
+      ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char> format)>
+    >
+    handler,
+  ) {
+    return _sp_set_debug_handler(handler);
+  }
+
+  late final _sp_set_debug_handlerPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Void Function(
+        ffi.Pointer<
+          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char> format)>
+        >,
+      )
+    >
+  >('sp_set_debug_handler');
+  late final _sp_set_debug_handler =
+      _sp_set_debug_handlerPtr
+          .asFunction<
+            void Function(
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(ffi.Pointer<ffi.Char> format)
+                >
+              >,
+            )
+          >();
+
+  /// Default handler function for library debugging messages.
+  ///
+  /// This function prints debug messages to the standard error stream if the
+  /// environment variable LIBSERIALPORT_DEBUG is set. Otherwise, they are
+  /// ignored.
+  ///
+  /// @param[in] format The format string to use. Must not be NULL.
+  /// @param[in] ... The variable length argument list to use.
+  ///
+  /// @since 0.1.0
+  void sp_default_debug_handler(ffi.Pointer<ffi.Char> format) {
+    return _sp_default_debug_handler(format);
+  }
+
+  late final _sp_default_debug_handlerPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+        'sp_default_debug_handler',
+      );
+  late final _sp_default_debug_handler =
+      _sp_default_debug_handlerPtr
+          .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
+  /// Get the major libserialport package version number.
+  ///
+  /// @return The major package version number.
+  ///
+  /// @since 0.1.0
+  int sp_get_major_package_version() {
+    return _sp_get_major_package_version();
+  }
+
+  late final _sp_get_major_package_versionPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>(
+        'sp_get_major_package_version',
+      );
+  late final _sp_get_major_package_version =
+      _sp_get_major_package_versionPtr.asFunction<int Function()>();
+
+  /// Get the minor libserialport package version number.
+  ///
+  /// @return The minor package version number.
+  ///
+  /// @since 0.1.0
+  int sp_get_minor_package_version() {
+    return _sp_get_minor_package_version();
+  }
+
+  late final _sp_get_minor_package_versionPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>(
+        'sp_get_minor_package_version',
+      );
+  late final _sp_get_minor_package_version =
+      _sp_get_minor_package_versionPtr.asFunction<int Function()>();
+
+  /// Get the micro libserialport package version number.
+  ///
+  /// @return The micro package version number.
+  ///
+  /// @since 0.1.0
+  int sp_get_micro_package_version() {
+    return _sp_get_micro_package_version();
+  }
+
+  late final _sp_get_micro_package_versionPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>(
+        'sp_get_micro_package_version',
+      );
+  late final _sp_get_micro_package_version =
+      _sp_get_micro_package_versionPtr.asFunction<int Function()>();
+
+  /// Get the libserialport package version number as a string.
+  ///
+  /// @return The package version number string. The returned string is
+  /// static and thus should NOT be free'd by the caller.
+  ///
+  /// @since 0.1.0
+  ffi.Pointer<ffi.Char> sp_get_package_version_string() {
+    return _sp_get_package_version_string();
+  }
+
+  late final _sp_get_package_version_stringPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
+        'sp_get_package_version_string',
+      );
+  late final _sp_get_package_version_string =
+      _sp_get_package_version_stringPtr
+          .asFunction<ffi.Pointer<ffi.Char> Function()>();
+
+  /// Get the "current" part of the libserialport library version number.
+  ///
+  /// @return The "current" library version number.
+  ///
+  /// @since 0.1.0
+  int sp_get_current_lib_version() {
+    return _sp_get_current_lib_version();
+  }
+
+  late final _sp_get_current_lib_versionPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>(
+        'sp_get_current_lib_version',
+      );
+  late final _sp_get_current_lib_version =
+      _sp_get_current_lib_versionPtr.asFunction<int Function()>();
+
+  /// Get the "revision" part of the libserialport library version number.
+  ///
+  /// @return The "revision" library version number.
+  ///
+  /// @since 0.1.0
+  int sp_get_revision_lib_version() {
+    return _sp_get_revision_lib_version();
+  }
+
+  late final _sp_get_revision_lib_versionPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>(
+        'sp_get_revision_lib_version',
+      );
+  late final _sp_get_revision_lib_version =
+      _sp_get_revision_lib_versionPtr.asFunction<int Function()>();
+
+  /// Get the "age" part of the libserialport library version number.
+  ///
+  /// @return The "age" library version number.
+  ///
+  /// @since 0.1.0
+  int sp_get_age_lib_version() {
+    return _sp_get_age_lib_version();
+  }
+
+  late final _sp_get_age_lib_versionPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>('sp_get_age_lib_version');
+  late final _sp_get_age_lib_version =
+      _sp_get_age_lib_versionPtr.asFunction<int Function()>();
+
+  /// Get the libserialport library version number as a string.
+  ///
+  /// @return The library version number string. The returned string is
+  /// static and thus should NOT be free'd by the caller.
+  ///
+  /// @since 0.1.0
+  ffi.Pointer<ffi.Char> sp_get_lib_version_string() {
+    return _sp_get_lib_version_string();
+  }
+
+  late final _sp_get_lib_version_stringPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
+        'sp_get_lib_version_string',
+      );
+  late final _sp_get_lib_version_string =
+      _sp_get_lib_version_stringPtr
+          .asFunction<ffi.Pointer<ffi.Char> Function()>();
 }
+
+/// Return values.
+class sp_return {
+  static const SP_OK = sp_return(0, 'SP_OK');
+
+  /// Invalid arguments were passed to the function.
+  static const SP_ERR_ARG = sp_return(-1, 'SP_ERR_ARG');
+
+  /// A system error occurred while executing the operation.
+  static const SP_ERR_FAIL = sp_return(-2, 'SP_ERR_FAIL');
+
+  /// A memory allocation failed while executing the operation.
+  static const SP_ERR_MEM = sp_return(-3, 'SP_ERR_MEM');
+
+  /// The requested operation is not supported by this system or device.
+  static const SP_ERR_SUPP = sp_return(-4, 'SP_ERR_SUPP');
+
+  final int value;
+  final String name;
+  const sp_return(this.value, this.name);
+
+  static sp_return fromValue(int value) => switch (value) {
+    0 => SP_OK,
+    -1 => SP_ERR_ARG,
+    -2 => SP_ERR_FAIL,
+    -3 => SP_ERR_MEM,
+    -4 => SP_ERR_SUPP,
+    _ =>
+      value > 0
+          ? sp_return(value, 'SP_OK')
+          : throw ArgumentError("Unknown value for sp_return: $value"),
+  };
+}
+
+/// Port access modes.
+enum sp_mode {
+  /// Open port for read access.
+  SP_MODE_READ(1),
+
+  /// Open port for write access.
+  SP_MODE_WRITE(2),
+
+  /// Open port for read and write access. @since 0.1.1
+  SP_MODE_READ_WRITE(3);
+
+  final int value;
+  const sp_mode(this.value);
+
+  static sp_mode fromValue(int value) => switch (value) {
+    1 => SP_MODE_READ,
+    2 => SP_MODE_WRITE,
+    3 => SP_MODE_READ_WRITE,
+    _ => throw ArgumentError("Unknown value for sp_mode: $value"),
+  };
+}
+
+/// Port events.
+enum sp_event {
+  /// Data received and ready to read.
+  SP_EVENT_RX_READY(1),
+
+  /// Ready to transmit new data.
+  SP_EVENT_TX_READY(2),
+
+  /// Error occurred.
+  SP_EVENT_ERROR(4);
+
+  final int value;
+  const sp_event(this.value);
+
+  static sp_event fromValue(int value) => switch (value) {
+    1 => SP_EVENT_RX_READY,
+    2 => SP_EVENT_TX_READY,
+    4 => SP_EVENT_ERROR,
+    _ => throw ArgumentError("Unknown value for sp_event: $value"),
+  };
+}
+
+/// Buffer selection.
+enum sp_buffer {
+  /// Input buffer.
+  SP_BUF_INPUT(1),
+
+  /// Output buffer.
+  SP_BUF_OUTPUT(2),
+
+  /// Both buffers.
+  SP_BUF_BOTH(3);
+
+  final int value;
+  const sp_buffer(this.value);
+
+  static sp_buffer fromValue(int value) => switch (value) {
+    1 => SP_BUF_INPUT,
+    2 => SP_BUF_OUTPUT,
+    3 => SP_BUF_BOTH,
+    _ => throw ArgumentError("Unknown value for sp_buffer: $value"),
+  };
+}
+
+/// Parity settings.
+enum sp_parity {
+  /// Special value to indicate setting should be left alone.
+  SP_PARITY_INVALID(-1),
+
+  /// No parity.
+  SP_PARITY_NONE(0),
+
+  /// Odd parity.
+  SP_PARITY_ODD(1),
+
+  /// Even parity.
+  SP_PARITY_EVEN(2),
+
+  /// Mark parity.
+  SP_PARITY_MARK(3),
+
+  /// Space parity.
+  SP_PARITY_SPACE(4);
+
+  final int value;
+  const sp_parity(this.value);
+
+  static sp_parity fromValue(int value) => switch (value) {
+    -1 => SP_PARITY_INVALID,
+    0 => SP_PARITY_NONE,
+    1 => SP_PARITY_ODD,
+    2 => SP_PARITY_EVEN,
+    3 => SP_PARITY_MARK,
+    4 => SP_PARITY_SPACE,
+    _ => throw ArgumentError("Unknown value for sp_parity: $value"),
+  };
+}
+
+/// RTS pin behaviour.
+enum sp_rts {
+  /// Special value to indicate setting should be left alone.
+  SP_RTS_INVALID(-1),
+
+  /// RTS off.
+  SP_RTS_OFF(0),
+
+  /// RTS on.
+  SP_RTS_ON(1),
+
+  /// RTS used for flow control.
+  SP_RTS_FLOW_CONTROL(2);
+
+  final int value;
+  const sp_rts(this.value);
+
+  static sp_rts fromValue(int value) => switch (value) {
+    -1 => SP_RTS_INVALID,
+    0 => SP_RTS_OFF,
+    1 => SP_RTS_ON,
+    2 => SP_RTS_FLOW_CONTROL,
+    _ => throw ArgumentError("Unknown value for sp_rts: $value"),
+  };
+}
+
+/// CTS pin behaviour.
+enum sp_cts {
+  /// Special value to indicate setting should be left alone.
+  SP_CTS_INVALID(-1),
+
+  /// CTS ignored.
+  SP_CTS_IGNORE(0),
+
+  /// CTS used for flow control.
+  SP_CTS_FLOW_CONTROL(1);
+
+  final int value;
+  const sp_cts(this.value);
+
+  static sp_cts fromValue(int value) => switch (value) {
+    -1 => SP_CTS_INVALID,
+    0 => SP_CTS_IGNORE,
+    1 => SP_CTS_FLOW_CONTROL,
+    _ => throw ArgumentError("Unknown value for sp_cts: $value"),
+  };
+}
+
+/// DTR pin behaviour.
+enum sp_dtr {
+  /// Special value to indicate setting should be left alone.
+  SP_DTR_INVALID(-1),
+
+  /// DTR off.
+  SP_DTR_OFF(0),
+
+  /// DTR on.
+  SP_DTR_ON(1),
+
+  /// DTR used for flow control.
+  SP_DTR_FLOW_CONTROL(2);
+
+  final int value;
+  const sp_dtr(this.value);
+
+  static sp_dtr fromValue(int value) => switch (value) {
+    -1 => SP_DTR_INVALID,
+    0 => SP_DTR_OFF,
+    1 => SP_DTR_ON,
+    2 => SP_DTR_FLOW_CONTROL,
+    _ => throw ArgumentError("Unknown value for sp_dtr: $value"),
+  };
+}
+
+/// DSR pin behaviour.
+enum sp_dsr {
+  /// Special value to indicate setting should be left alone.
+  SP_DSR_INVALID(-1),
+
+  /// DSR ignored.
+  SP_DSR_IGNORE(0),
+
+  /// DSR used for flow control.
+  SP_DSR_FLOW_CONTROL(1);
+
+  final int value;
+  const sp_dsr(this.value);
+
+  static sp_dsr fromValue(int value) => switch (value) {
+    -1 => SP_DSR_INVALID,
+    0 => SP_DSR_IGNORE,
+    1 => SP_DSR_FLOW_CONTROL,
+    _ => throw ArgumentError("Unknown value for sp_dsr: $value"),
+  };
+}
+
+/// XON/XOFF flow control behaviour.
+enum sp_xonxoff {
+  /// Special value to indicate setting should be left alone.
+  SP_XONXOFF_INVALID(-1),
+
+  /// XON/XOFF disabled.
+  SP_XONXOFF_DISABLED(0),
+
+  /// XON/XOFF enabled for input only.
+  SP_XONXOFF_IN(1),
+
+  /// XON/XOFF enabled for output only.
+  SP_XONXOFF_OUT(2),
+
+  /// XON/XOFF enabled for input and output.
+  SP_XONXOFF_INOUT(3);
+
+  final int value;
+  const sp_xonxoff(this.value);
+
+  static sp_xonxoff fromValue(int value) => switch (value) {
+    -1 => SP_XONXOFF_INVALID,
+    0 => SP_XONXOFF_DISABLED,
+    1 => SP_XONXOFF_IN,
+    2 => SP_XONXOFF_OUT,
+    3 => SP_XONXOFF_INOUT,
+    _ => throw ArgumentError("Unknown value for sp_xonxoff: $value"),
+  };
+}
+
+/// Standard flow control combinations.
+enum sp_flowcontrol {
+  /// No flow control.
+  SP_FLOWCONTROL_NONE(0),
+
+  /// Software flow control using XON/XOFF characters.
+  SP_FLOWCONTROL_XONXOFF(1),
+
+  /// Hardware flow control using RTS/CTS signals.
+  SP_FLOWCONTROL_RTSCTS(2),
+
+  /// Hardware flow control using DTR/DSR signals.
+  SP_FLOWCONTROL_DTRDSR(3);
+
+  final int value;
+  const sp_flowcontrol(this.value);
+
+  static sp_flowcontrol fromValue(int value) => switch (value) {
+    0 => SP_FLOWCONTROL_NONE,
+    1 => SP_FLOWCONTROL_XONXOFF,
+    2 => SP_FLOWCONTROL_RTSCTS,
+    3 => SP_FLOWCONTROL_DTRDSR,
+    _ => throw ArgumentError("Unknown value for sp_flowcontrol: $value"),
+  };
+}
+
+/// Input signals.
+enum sp_signal {
+  /// Clear to send.
+  SP_SIG_CTS(1),
+
+  /// Data set ready.
+  SP_SIG_DSR(2),
+
+  /// Data carrier detect.
+  SP_SIG_DCD(4),
+
+  /// Ring indicator.
+  SP_SIG_RI(8);
+
+  final int value;
+  const sp_signal(this.value);
+
+  static sp_signal fromValue(int value) => switch (value) {
+    1 => SP_SIG_CTS,
+    2 => SP_SIG_DSR,
+    4 => SP_SIG_DCD,
+    8 => SP_SIG_RI,
+    _ => throw ArgumentError("Unknown value for sp_signal: $value"),
+  };
+}
+
+/// Transport types.
+///
+/// @since 0.1.1
+enum sp_transport {
+  /// Native platform serial port. @since 0.1.1
+  SP_TRANSPORT_NATIVE(0),
+
+  /// USB serial port adapter. @since 0.1.1
+  SP_TRANSPORT_USB(1),
+
+  /// Bluetooth serial port adapter. @since 0.1.1
+  SP_TRANSPORT_BLUETOOTH(2);
+
+  final int value;
+  const sp_transport(this.value);
+
+  static sp_transport fromValue(int value) => switch (value) {
+    0 => SP_TRANSPORT_NATIVE,
+    1 => SP_TRANSPORT_USB,
+    2 => SP_TRANSPORT_BLUETOOTH,
+    _ => throw ArgumentError("Unknown value for sp_transport: $value"),
+  };
+}
+
+/// @struct sp_port
+/// An opaque structure representing a serial port.
+final class sp_port extends ffi.Opaque {}
+
+/// @struct sp_port_config
+/// An opaque structure representing the configuration for a serial port.
+final class sp_port_config extends ffi.Opaque {}
+
+/// @struct sp_event_set
+/// A set of handles to wait on for events.
+final class sp_event_set extends ffi.Struct {
+  /// Array of OS-specific handles.
+  external ffi.Pointer<ffi.Void> handles;
+
+  /// Array of bitmasks indicating which events apply for each handle.
+  external ffi.Pointer<ffi.UnsignedInt> masks;
+
+  /// Number of handles.
+  @ffi.UnsignedInt()
+  external int count;
+}
+
+const int SP_PACKAGE_VERSION_MAJOR = 0;
+
+const int SP_PACKAGE_VERSION_MINOR = 1;
+
+const int SP_PACKAGE_VERSION_MICRO = 1;
+
+const String SP_PACKAGE_VERSION_STRING = '0.1.1';
+
+const int SP_LIB_VERSION_CURRENT = 1;
+
+const int SP_LIB_VERSION_REVISION = 0;
+
+const int SP_LIB_VERSION_AGE = 1;
+
+const String SP_LIB_VERSION_STRING = '1:0:1';
