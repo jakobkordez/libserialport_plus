@@ -15,16 +15,17 @@ import 'dart:ffi' as ffi;
 class FlutterSerialBindings {
   /// Holds the symbol lookup function.
   final ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
-  _lookup;
+      _lookup;
 
   /// The symbols are looked up in [dynamicLibrary].
   FlutterSerialBindings(ffi.DynamicLibrary dynamicLibrary)
-    : _lookup = dynamicLibrary.lookup;
+      : _lookup = dynamicLibrary.lookup;
 
   /// The symbols are looked up with [lookup].
   FlutterSerialBindings.fromLookup(
-    ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) lookup,
-  ) : _lookup = lookup;
+      ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
+          lookup)
+      : _lookup = lookup;
 
   /// Obtain a pointer to a new sp_port structure representing the named port.
   ///
@@ -45,36 +46,35 @@ class FlutterSerialBindings {
     ffi.Pointer<ffi.Char> portname,
     ffi.Pointer<ffi.Pointer<sp_port>> port_ptr,
   ) {
-    return sp_return.fromValue(_sp_get_port_by_name(portname, port_ptr));
+    return sp_return.fromValue(_sp_get_port_by_name(
+      portname,
+      port_ptr,
+    ));
   }
 
   late final _sp_get_port_by_namePtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<sp_port>>)
-    >
-  >('sp_get_port_by_name');
-  late final _sp_get_port_by_name =
-      _sp_get_port_by_namePtr
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<sp_port>>,
-            )
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<sp_port>>)>>('sp_get_port_by_name');
+  late final _sp_get_port_by_name = _sp_get_port_by_namePtr.asFunction<
+      int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<sp_port>>)>();
 
   /// Free a port structure obtained from sp_get_port_by_name() or sp_copy_port().
   ///
   /// @param[in] port Pointer to a port structure. Must not be NULL.
   ///
   /// @since 0.1.0
-  void sp_free_port(ffi.Pointer<sp_port> port) {
-    return _sp_free_port(port);
+  void sp_free_port(
+    ffi.Pointer<sp_port> port,
+  ) {
+    return _sp_free_port(
+      port,
+    );
   }
 
   late final _sp_free_portPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<sp_port>)>>(
-        'sp_free_port',
-      );
+          'sp_free_port');
   late final _sp_free_port =
       _sp_free_portPtr.asFunction<void Function(ffi.Pointer<sp_port>)>();
 
@@ -98,19 +98,18 @@ class FlutterSerialBindings {
   sp_return sp_list_ports(
     ffi.Pointer<ffi.Pointer<ffi.Pointer<sp_port>>> list_ptr,
   ) {
-    return sp_return.fromValue(_sp_list_ports(list_ptr));
+    return sp_return.fromValue(_sp_list_ports(
+      list_ptr,
+    ));
   }
 
   late final _sp_list_portsPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<ffi.Pointer<ffi.Pointer<sp_port>>>)
-    >
-  >('sp_list_ports');
-  late final _sp_list_ports =
-      _sp_list_portsPtr
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Pointer<ffi.Pointer<sp_port>>>)
-          >();
+          ffi.NativeFunction<
+              ffi.Int Function(
+                  ffi.Pointer<ffi.Pointer<ffi.Pointer<sp_port>>>)>>(
+      'sp_list_ports');
+  late final _sp_list_ports = _sp_list_portsPtr.asFunction<
+      int Function(ffi.Pointer<ffi.Pointer<ffi.Pointer<sp_port>>>)>();
 
   /// Make a new copy of an sp_port structure.
   ///
@@ -131,22 +130,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port> port,
     ffi.Pointer<ffi.Pointer<sp_port>> copy_ptr,
   ) {
-    return sp_return.fromValue(_sp_copy_port(port, copy_ptr));
+    return sp_return.fromValue(_sp_copy_port(
+      port,
+      copy_ptr,
+    ));
   }
 
   late final _sp_copy_portPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Pointer<sp_port>>)
-    >
-  >('sp_copy_port');
-  late final _sp_copy_port =
-      _sp_copy_portPtr
-          .asFunction<
-            int Function(
-              ffi.Pointer<sp_port>,
-              ffi.Pointer<ffi.Pointer<sp_port>>,
-            )
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port>,
+              ffi.Pointer<ffi.Pointer<sp_port>>)>>('sp_copy_port');
+  late final _sp_copy_port = _sp_copy_portPtr.asFunction<
+      int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Pointer<sp_port>>)>();
 
   /// Free a port list obtained from sp_list_ports().
   ///
@@ -156,16 +151,20 @@ class FlutterSerialBindings {
   /// @param[in] ports Pointer to a list of port structures. Must not be NULL.
   ///
   /// @since 0.1.0
-  void sp_free_port_list(ffi.Pointer<ffi.Pointer<sp_port>> ports) {
-    return _sp_free_port_list(ports);
+  void sp_free_port_list(
+    ffi.Pointer<ffi.Pointer<sp_port>> ports,
+  ) {
+    return _sp_free_port_list(
+      ports,
+    );
   }
 
   late final _sp_free_port_listPtr = _lookup<
-    ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Pointer<sp_port>>)>
-  >('sp_free_port_list');
-  late final _sp_free_port_list =
-      _sp_free_port_listPtr
-          .asFunction<void Function(ffi.Pointer<ffi.Pointer<sp_port>>)>();
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Pointer<sp_port>>)>>('sp_free_port_list');
+  late final _sp_free_port_list = _sp_free_port_listPtr
+      .asFunction<void Function(ffi.Pointer<ffi.Pointer<sp_port>>)>();
 
   /// Open the specified serial port.
   ///
@@ -175,13 +174,19 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_open(ffi.Pointer<sp_port> port, sp_mode flags) {
-    return sp_return.fromValue(_sp_open(port, flags.value));
+  sp_return sp_open(
+    ffi.Pointer<sp_port> port,
+    sp_mode flags,
+  ) {
+    return sp_return.fromValue(_sp_open(
+      port,
+      flags.value,
+    ));
   }
 
   late final _sp_openPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.UnsignedInt)>
-  >('sp_open');
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port>, ffi.UnsignedInt)>>('sp_open');
   late final _sp_open =
       _sp_openPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
 
@@ -192,14 +197,17 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_close(ffi.Pointer<sp_port> port) {
-    return sp_return.fromValue(_sp_close(port));
+  sp_return sp_close(
+    ffi.Pointer<sp_port> port,
+  ) {
+    return sp_return.fromValue(_sp_close(
+      port,
+    ));
   }
 
   late final _sp_closePtr =
       _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>)>>(
-        'sp_close',
-      );
+          'sp_close');
   late final _sp_close =
       _sp_closePtr.asFunction<int Function(ffi.Pointer<sp_port>)>();
 
@@ -216,16 +224,20 @@ class FlutterSerialBindings {
   /// the port structure has been freed.
   ///
   /// @since 0.1.0
-  ffi.Pointer<ffi.Char> sp_get_port_name(ffi.Pointer<sp_port> port) {
-    return _sp_get_port_name(port);
+  ffi.Pointer<ffi.Char> sp_get_port_name(
+    ffi.Pointer<sp_port> port,
+  ) {
+    return _sp_get_port_name(
+      port,
+    );
   }
 
   late final _sp_get_port_namePtr = _lookup<
-    ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>
-  >('sp_get_port_name');
-  late final _sp_get_port_name =
-      _sp_get_port_namePtr
-          .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>();
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<sp_port>)>>('sp_get_port_name');
+  late final _sp_get_port_name = _sp_get_port_namePtr
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>();
 
   /// Get a description for a port, to present to end user.
   ///
@@ -236,16 +248,20 @@ class FlutterSerialBindings {
   /// be used after the port structure has been freed.
   ///
   /// @since 0.1.1
-  ffi.Pointer<ffi.Char> sp_get_port_description(ffi.Pointer<sp_port> port) {
-    return _sp_get_port_description(port);
+  ffi.Pointer<ffi.Char> sp_get_port_description(
+    ffi.Pointer<sp_port> port,
+  ) {
+    return _sp_get_port_description(
+      port,
+    );
   }
 
   late final _sp_get_port_descriptionPtr = _lookup<
-    ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>
-  >('sp_get_port_description');
-  late final _sp_get_port_description =
-      _sp_get_port_descriptionPtr
-          .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>();
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<sp_port>)>>('sp_get_port_description');
+  late final _sp_get_port_description = _sp_get_port_descriptionPtr
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>();
 
   /// Get the transport type used by a port.
   ///
@@ -254,16 +270,19 @@ class FlutterSerialBindings {
   /// @return The port transport type.
   ///
   /// @since 0.1.1
-  sp_transport sp_get_port_transport(ffi.Pointer<sp_port> port) {
-    return sp_transport.fromValue(_sp_get_port_transport(port));
+  sp_transport sp_get_port_transport(
+    ffi.Pointer<sp_port> port,
+  ) {
+    return sp_transport.fromValue(_sp_get_port_transport(
+      port,
+    ));
   }
 
   late final _sp_get_port_transportPtr = _lookup<
-    ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<sp_port>)>
-  >('sp_get_port_transport');
-  late final _sp_get_port_transport =
-      _sp_get_port_transportPtr
-          .asFunction<int Function(ffi.Pointer<sp_port>)>();
+          ffi.NativeFunction<ffi.UnsignedInt Function(ffi.Pointer<sp_port>)>>(
+      'sp_get_port_transport');
+  late final _sp_get_port_transport = _sp_get_port_transportPtr
+      .asFunction<int Function(ffi.Pointer<sp_port>)>();
 
   /// Get the USB bus number and address on bus of a USB serial adapter port.
   ///
@@ -281,29 +300,21 @@ class FlutterSerialBindings {
     ffi.Pointer<ffi.Int> usb_bus,
     ffi.Pointer<ffi.Int> usb_address,
   ) {
-    return sp_return.fromValue(
-      _sp_get_port_usb_bus_address(port, usb_bus, usb_address),
-    );
+    return sp_return.fromValue(_sp_get_port_usb_bus_address(
+      port,
+      usb_bus,
+      usb_address,
+    ));
   }
 
   late final _sp_get_port_usb_bus_addressPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(
-        ffi.Pointer<sp_port>,
-        ffi.Pointer<ffi.Int>,
-        ffi.Pointer<ffi.Int>,
-      )
-    >
-  >('sp_get_port_usb_bus_address');
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Int>,
+              ffi.Pointer<ffi.Int>)>>('sp_get_port_usb_bus_address');
   late final _sp_get_port_usb_bus_address =
-      _sp_get_port_usb_bus_addressPtr
-          .asFunction<
-            int Function(
-              ffi.Pointer<sp_port>,
-              ffi.Pointer<ffi.Int>,
-              ffi.Pointer<ffi.Int>,
-            )
-          >();
+      _sp_get_port_usb_bus_addressPtr.asFunction<
+          int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Int>,
+              ffi.Pointer<ffi.Int>)>();
 
   /// Get the USB Vendor ID and Product ID of a USB serial adapter port.
   ///
@@ -321,29 +332,20 @@ class FlutterSerialBindings {
     ffi.Pointer<ffi.Int> usb_vid,
     ffi.Pointer<ffi.Int> usb_pid,
   ) {
-    return sp_return.fromValue(
-      _sp_get_port_usb_vid_pid(port, usb_vid, usb_pid),
-    );
+    return sp_return.fromValue(_sp_get_port_usb_vid_pid(
+      port,
+      usb_vid,
+      usb_pid,
+    ));
   }
 
   late final _sp_get_port_usb_vid_pidPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(
-        ffi.Pointer<sp_port>,
-        ffi.Pointer<ffi.Int>,
-        ffi.Pointer<ffi.Int>,
-      )
-    >
-  >('sp_get_port_usb_vid_pid');
-  late final _sp_get_port_usb_vid_pid =
-      _sp_get_port_usb_vid_pidPtr
-          .asFunction<
-            int Function(
-              ffi.Pointer<sp_port>,
-              ffi.Pointer<ffi.Int>,
-              ffi.Pointer<ffi.Int>,
-            )
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Int>,
+              ffi.Pointer<ffi.Int>)>>('sp_get_port_usb_vid_pid');
+  late final _sp_get_port_usb_vid_pid = _sp_get_port_usb_vid_pidPtr.asFunction<
+      int Function(
+          ffi.Pointer<sp_port>, ffi.Pointer<ffi.Int>, ffi.Pointer<ffi.Int>)>();
 
   /// Get the USB manufacturer string of a USB serial adapter port.
   ///
@@ -357,15 +359,17 @@ class FlutterSerialBindings {
   ffi.Pointer<ffi.Char> sp_get_port_usb_manufacturer(
     ffi.Pointer<sp_port> port,
   ) {
-    return _sp_get_port_usb_manufacturer(port);
+    return _sp_get_port_usb_manufacturer(
+      port,
+    );
   }
 
   late final _sp_get_port_usb_manufacturerPtr = _lookup<
-    ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>
-  >('sp_get_port_usb_manufacturer');
-  late final _sp_get_port_usb_manufacturer =
-      _sp_get_port_usb_manufacturerPtr
-          .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>();
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<sp_port>)>>('sp_get_port_usb_manufacturer');
+  late final _sp_get_port_usb_manufacturer = _sp_get_port_usb_manufacturerPtr
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>();
 
   /// Get the USB product string of a USB serial adapter port.
   ///
@@ -376,16 +380,20 @@ class FlutterSerialBindings {
   /// used after the port structure has been freed.
   ///
   /// @since 0.1.1
-  ffi.Pointer<ffi.Char> sp_get_port_usb_product(ffi.Pointer<sp_port> port) {
-    return _sp_get_port_usb_product(port);
+  ffi.Pointer<ffi.Char> sp_get_port_usb_product(
+    ffi.Pointer<sp_port> port,
+  ) {
+    return _sp_get_port_usb_product(
+      port,
+    );
   }
 
   late final _sp_get_port_usb_productPtr = _lookup<
-    ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>
-  >('sp_get_port_usb_product');
-  late final _sp_get_port_usb_product =
-      _sp_get_port_usb_productPtr
-          .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>();
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<sp_port>)>>('sp_get_port_usb_product');
+  late final _sp_get_port_usb_product = _sp_get_port_usb_productPtr
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>();
 
   /// Get the USB serial number string of a USB serial adapter port.
   ///
@@ -396,16 +404,20 @@ class FlutterSerialBindings {
   /// not be used after the port structure has been freed.
   ///
   /// @since 0.1.1
-  ffi.Pointer<ffi.Char> sp_get_port_usb_serial(ffi.Pointer<sp_port> port) {
-    return _sp_get_port_usb_serial(port);
+  ffi.Pointer<ffi.Char> sp_get_port_usb_serial(
+    ffi.Pointer<sp_port> port,
+  ) {
+    return _sp_get_port_usb_serial(
+      port,
+    );
   }
 
   late final _sp_get_port_usb_serialPtr = _lookup<
-    ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>
-  >('sp_get_port_usb_serial');
-  late final _sp_get_port_usb_serial =
-      _sp_get_port_usb_serialPtr
-          .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>();
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<sp_port>)>>('sp_get_port_usb_serial');
+  late final _sp_get_port_usb_serial = _sp_get_port_usb_serialPtr
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>();
 
   /// Get the MAC address of a Bluetooth serial adapter port.
   ///
@@ -419,15 +431,17 @@ class FlutterSerialBindings {
   ffi.Pointer<ffi.Char> sp_get_port_bluetooth_address(
     ffi.Pointer<sp_port> port,
   ) {
-    return _sp_get_port_bluetooth_address(port);
+    return _sp_get_port_bluetooth_address(
+      port,
+    );
   }
 
   late final _sp_get_port_bluetooth_addressPtr = _lookup<
-    ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>
-  >('sp_get_port_bluetooth_address');
-  late final _sp_get_port_bluetooth_address =
-      _sp_get_port_bluetooth_addressPtr
-          .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>();
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<sp_port>)>>('sp_get_port_bluetooth_address');
+  late final _sp_get_port_bluetooth_address = _sp_get_port_bluetooth_addressPtr
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<sp_port>)>();
 
   /// Get the operating system handle for a port.
   ///
@@ -461,19 +475,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port> port,
     ffi.Pointer<ffi.Void> result_ptr,
   ) {
-    return sp_return.fromValue(_sp_get_port_handle(port, result_ptr));
+    return sp_return.fromValue(_sp_get_port_handle(
+      port,
+      result_ptr,
+    ));
   }
 
   late final _sp_get_port_handlePtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>)
-    >
-  >('sp_get_port_handle');
-  late final _sp_get_port_handle =
-      _sp_get_port_handlePtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port>,
+              ffi.Pointer<ffi.Void>)>>('sp_get_port_handle');
+  late final _sp_get_port_handle = _sp_get_port_handlePtr
+      .asFunction<int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>)>();
 
   /// Allocate a port configuration structure.
   ///
@@ -495,34 +508,39 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_new_config(ffi.Pointer<ffi.Pointer<sp_port_config>> config_ptr) {
-    return sp_return.fromValue(_sp_new_config(config_ptr));
+  sp_return sp_new_config(
+    ffi.Pointer<ffi.Pointer<sp_port_config>> config_ptr,
+  ) {
+    return sp_return.fromValue(_sp_new_config(
+      config_ptr,
+    ));
   }
 
   late final _sp_new_configPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<ffi.Pointer<sp_port_config>>)
-    >
-  >('sp_new_config');
-  late final _sp_new_config =
-      _sp_new_configPtr
-          .asFunction<int Function(ffi.Pointer<ffi.Pointer<sp_port_config>>)>();
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<ffi.Pointer<sp_port_config>>)>>('sp_new_config');
+  late final _sp_new_config = _sp_new_configPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Pointer<sp_port_config>>)>();
 
   /// Free a port configuration structure.
   ///
   /// @param[in] config Pointer to a configuration structure. Must not be NULL.
   ///
   /// @since 0.1.0
-  void sp_free_config(ffi.Pointer<sp_port_config> config) {
-    return _sp_free_config(config);
+  void sp_free_config(
+    ffi.Pointer<sp_port_config> config,
+  ) {
+    return _sp_free_config(
+      config,
+    );
   }
 
   late final _sp_free_configPtr = _lookup<
-    ffi.NativeFunction<ffi.Void Function(ffi.Pointer<sp_port_config>)>
-  >('sp_free_config');
-  late final _sp_free_config =
-      _sp_free_configPtr
-          .asFunction<void Function(ffi.Pointer<sp_port_config>)>();
+          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<sp_port_config>)>>(
+      'sp_free_config');
+  late final _sp_free_config = _sp_free_configPtr
+      .asFunction<void Function(ffi.Pointer<sp_port_config>)>();
 
   /// Get the current configuration of the specified serial port.
   ///
@@ -546,19 +564,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port> port,
     ffi.Pointer<sp_port_config> config,
   ) {
-    return sp_return.fromValue(_sp_get_config(port, config));
+    return sp_return.fromValue(_sp_get_config(
+      port,
+      config,
+    ));
   }
 
   late final _sp_get_configPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<sp_port_config>)
-    >
-  >('sp_get_config');
-  late final _sp_get_config =
-      _sp_get_configPtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_port>, ffi.Pointer<sp_port_config>)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port>,
+              ffi.Pointer<sp_port_config>)>>('sp_get_config');
+  late final _sp_get_config = _sp_get_configPtr.asFunction<
+      int Function(ffi.Pointer<sp_port>, ffi.Pointer<sp_port_config>)>();
 
   /// Set the configuration for the specified serial port.
   ///
@@ -579,19 +596,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port> port,
     ffi.Pointer<sp_port_config> config,
   ) {
-    return sp_return.fromValue(_sp_set_config(port, config));
+    return sp_return.fromValue(_sp_set_config(
+      port,
+      config,
+    ));
   }
 
   late final _sp_set_configPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<sp_port_config>)
-    >
-  >('sp_set_config');
-  late final _sp_set_config =
-      _sp_set_configPtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_port>, ffi.Pointer<sp_port_config>)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port>,
+              ffi.Pointer<sp_port_config>)>>('sp_set_config');
+  late final _sp_set_config = _sp_set_configPtr.asFunction<
+      int Function(ffi.Pointer<sp_port>, ffi.Pointer<sp_port_config>)>();
 
   /// Set the baud rate for the specified serial port.
   ///
@@ -601,13 +617,19 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_set_baudrate(ffi.Pointer<sp_port> port, int baudrate) {
-    return sp_return.fromValue(_sp_set_baudrate(port, baudrate));
+  sp_return sp_set_baudrate(
+    ffi.Pointer<sp_port> port,
+    int baudrate,
+  ) {
+    return sp_return.fromValue(_sp_set_baudrate(
+      port,
+      baudrate,
+    ));
   }
 
   late final _sp_set_baudratePtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>
-  >('sp_set_baudrate');
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>>(
+      'sp_set_baudrate');
   late final _sp_set_baudrate =
       _sp_set_baudratePtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
 
@@ -626,19 +648,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port_config> config,
     ffi.Pointer<ffi.Int> baudrate_ptr,
   ) {
-    return sp_return.fromValue(_sp_get_config_baudrate(config, baudrate_ptr));
+    return sp_return.fromValue(_sp_get_config_baudrate(
+      config,
+      baudrate_ptr,
+    ));
   }
 
   late final _sp_get_config_baudratePtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
-    >
-  >('sp_get_config_baudrate');
-  late final _sp_get_config_baudrate =
-      _sp_get_config_baudratePtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port_config>,
+              ffi.Pointer<ffi.Int>)>>('sp_get_config_baudrate');
+  late final _sp_get_config_baudrate = _sp_get_config_baudratePtr.asFunction<
+      int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)>();
 
   /// Set the baud rate in a port configuration.
   ///
@@ -652,15 +673,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port_config> config,
     int baudrate,
   ) {
-    return sp_return.fromValue(_sp_set_config_baudrate(config, baudrate));
+    return sp_return.fromValue(_sp_set_config_baudrate(
+      config,
+      baudrate,
+    ));
   }
 
   late final _sp_set_config_baudratePtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Int)>
-  >('sp_set_config_baudrate');
-  late final _sp_set_config_baudrate =
-      _sp_set_config_baudratePtr
-          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<sp_port_config>, ffi.Int)>>('sp_set_config_baudrate');
+  late final _sp_set_config_baudrate = _sp_set_config_baudratePtr
+      .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
 
   /// Set the data bits for the specified serial port.
   ///
@@ -670,13 +694,19 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_set_bits(ffi.Pointer<sp_port> port, int bits) {
-    return sp_return.fromValue(_sp_set_bits(port, bits));
+  sp_return sp_set_bits(
+    ffi.Pointer<sp_port> port,
+    int bits,
+  ) {
+    return sp_return.fromValue(_sp_set_bits(
+      port,
+      bits,
+    ));
   }
 
   late final _sp_set_bitsPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>
-  >('sp_set_bits');
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>>(
+      'sp_set_bits');
   late final _sp_set_bits =
       _sp_set_bitsPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
 
@@ -695,19 +725,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port_config> config,
     ffi.Pointer<ffi.Int> bits_ptr,
   ) {
-    return sp_return.fromValue(_sp_get_config_bits(config, bits_ptr));
+    return sp_return.fromValue(_sp_get_config_bits(
+      config,
+      bits_ptr,
+    ));
   }
 
   late final _sp_get_config_bitsPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
-    >
-  >('sp_get_config_bits');
-  late final _sp_get_config_bits =
-      _sp_get_config_bitsPtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port_config>,
+              ffi.Pointer<ffi.Int>)>>('sp_get_config_bits');
+  late final _sp_get_config_bits = _sp_get_config_bitsPtr.asFunction<
+      int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)>();
 
   /// Set the data bits in a port configuration.
   ///
@@ -717,16 +746,22 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_set_config_bits(ffi.Pointer<sp_port_config> config, int bits) {
-    return sp_return.fromValue(_sp_set_config_bits(config, bits));
+  sp_return sp_set_config_bits(
+    ffi.Pointer<sp_port_config> config,
+    int bits,
+  ) {
+    return sp_return.fromValue(_sp_set_config_bits(
+      config,
+      bits,
+    ));
   }
 
   late final _sp_set_config_bitsPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Int)>
-  >('sp_set_config_bits');
-  late final _sp_set_config_bits =
-      _sp_set_config_bitsPtr
-          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<sp_port_config>, ffi.Int)>>('sp_set_config_bits');
+  late final _sp_set_config_bits = _sp_set_config_bitsPtr
+      .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
 
   /// Set the parity setting for the specified serial port.
   ///
@@ -736,13 +771,19 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_set_parity(ffi.Pointer<sp_port> port, sp_parity parity) {
-    return sp_return.fromValue(_sp_set_parity(port, parity.value));
+  sp_return sp_set_parity(
+    ffi.Pointer<sp_port> port,
+    sp_parity parity,
+  ) {
+    return sp_return.fromValue(_sp_set_parity(
+      port,
+      parity.value,
+    ));
   }
 
   late final _sp_set_parityPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>
-  >('sp_set_parity');
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>>(
+      'sp_set_parity');
   late final _sp_set_parity =
       _sp_set_parityPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
 
@@ -761,19 +802,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port_config> config,
     ffi.Pointer<ffi.Int> parity_ptr,
   ) {
-    return sp_return.fromValue(_sp_get_config_parity(config, parity_ptr));
+    return sp_return.fromValue(_sp_get_config_parity(
+      config,
+      parity_ptr,
+    ));
   }
 
   late final _sp_get_config_parityPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
-    >
-  >('sp_get_config_parity');
-  late final _sp_get_config_parity =
-      _sp_get_config_parityPtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port_config>,
+              ffi.Pointer<ffi.Int>)>>('sp_get_config_parity');
+  late final _sp_get_config_parity = _sp_get_config_parityPtr.asFunction<
+      int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)>();
 
   /// Set the parity setting in a port configuration.
   ///
@@ -787,15 +827,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port_config> config,
     sp_parity parity,
   ) {
-    return sp_return.fromValue(_sp_set_config_parity(config, parity.value));
+    return sp_return.fromValue(_sp_set_config_parity(
+      config,
+      parity.value,
+    ));
   }
 
   late final _sp_set_config_parityPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Int)>
-  >('sp_set_config_parity');
-  late final _sp_set_config_parity =
-      _sp_set_config_parityPtr
-          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<sp_port_config>, ffi.Int)>>('sp_set_config_parity');
+  late final _sp_set_config_parity = _sp_set_config_parityPtr
+      .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
 
   /// Set the stop bits for the specified serial port.
   ///
@@ -805,13 +848,19 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_set_stopbits(ffi.Pointer<sp_port> port, int stopbits) {
-    return sp_return.fromValue(_sp_set_stopbits(port, stopbits));
+  sp_return sp_set_stopbits(
+    ffi.Pointer<sp_port> port,
+    int stopbits,
+  ) {
+    return sp_return.fromValue(_sp_set_stopbits(
+      port,
+      stopbits,
+    ));
   }
 
   late final _sp_set_stopbitsPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>
-  >('sp_set_stopbits');
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>>(
+      'sp_set_stopbits');
   late final _sp_set_stopbits =
       _sp_set_stopbitsPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
 
@@ -830,19 +879,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port_config> config,
     ffi.Pointer<ffi.Int> stopbits_ptr,
   ) {
-    return sp_return.fromValue(_sp_get_config_stopbits(config, stopbits_ptr));
+    return sp_return.fromValue(_sp_get_config_stopbits(
+      config,
+      stopbits_ptr,
+    ));
   }
 
   late final _sp_get_config_stopbitsPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
-    >
-  >('sp_get_config_stopbits');
-  late final _sp_get_config_stopbits =
-      _sp_get_config_stopbitsPtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port_config>,
+              ffi.Pointer<ffi.Int>)>>('sp_get_config_stopbits');
+  late final _sp_get_config_stopbits = _sp_get_config_stopbitsPtr.asFunction<
+      int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)>();
 
   /// Set the stop bits in a port configuration.
   ///
@@ -856,15 +904,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port_config> config,
     int stopbits,
   ) {
-    return sp_return.fromValue(_sp_set_config_stopbits(config, stopbits));
+    return sp_return.fromValue(_sp_set_config_stopbits(
+      config,
+      stopbits,
+    ));
   }
 
   late final _sp_set_config_stopbitsPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Int)>
-  >('sp_set_config_stopbits');
-  late final _sp_set_config_stopbits =
-      _sp_set_config_stopbitsPtr
-          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<sp_port_config>, ffi.Int)>>('sp_set_config_stopbits');
+  late final _sp_set_config_stopbits = _sp_set_config_stopbitsPtr
+      .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
 
   /// Set the RTS pin behaviour for the specified serial port.
   ///
@@ -874,13 +925,19 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_set_rts(ffi.Pointer<sp_port> port, sp_rts rts) {
-    return sp_return.fromValue(_sp_set_rts(port, rts.value));
+  sp_return sp_set_rts(
+    ffi.Pointer<sp_port> port,
+    sp_rts rts,
+  ) {
+    return sp_return.fromValue(_sp_set_rts(
+      port,
+      rts.value,
+    ));
   }
 
   late final _sp_set_rtsPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>
-  >('sp_set_rts');
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>>(
+      'sp_set_rts');
   late final _sp_set_rts =
       _sp_set_rtsPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
 
@@ -899,19 +956,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port_config> config,
     ffi.Pointer<ffi.Int> rts_ptr,
   ) {
-    return sp_return.fromValue(_sp_get_config_rts(config, rts_ptr));
+    return sp_return.fromValue(_sp_get_config_rts(
+      config,
+      rts_ptr,
+    ));
   }
 
   late final _sp_get_config_rtsPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
-    >
-  >('sp_get_config_rts');
-  late final _sp_get_config_rts =
-      _sp_get_config_rtsPtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port_config>,
+              ffi.Pointer<ffi.Int>)>>('sp_get_config_rts');
+  late final _sp_get_config_rts = _sp_get_config_rtsPtr.asFunction<
+      int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)>();
 
   /// Set the RTS pin behaviour in a port configuration.
   ///
@@ -921,16 +977,22 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_set_config_rts(ffi.Pointer<sp_port_config> config, sp_rts rts) {
-    return sp_return.fromValue(_sp_set_config_rts(config, rts.value));
+  sp_return sp_set_config_rts(
+    ffi.Pointer<sp_port_config> config,
+    sp_rts rts,
+  ) {
+    return sp_return.fromValue(_sp_set_config_rts(
+      config,
+      rts.value,
+    ));
   }
 
   late final _sp_set_config_rtsPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Int)>
-  >('sp_set_config_rts');
-  late final _sp_set_config_rts =
-      _sp_set_config_rtsPtr
-          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<sp_port_config>, ffi.Int)>>('sp_set_config_rts');
+  late final _sp_set_config_rts = _sp_set_config_rtsPtr
+      .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
 
   /// Set the CTS pin behaviour for the specified serial port.
   ///
@@ -940,13 +1002,19 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_set_cts(ffi.Pointer<sp_port> port, sp_cts cts) {
-    return sp_return.fromValue(_sp_set_cts(port, cts.value));
+  sp_return sp_set_cts(
+    ffi.Pointer<sp_port> port,
+    sp_cts cts,
+  ) {
+    return sp_return.fromValue(_sp_set_cts(
+      port,
+      cts.value,
+    ));
   }
 
   late final _sp_set_ctsPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>
-  >('sp_set_cts');
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>>(
+      'sp_set_cts');
   late final _sp_set_cts =
       _sp_set_ctsPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
 
@@ -965,19 +1033,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port_config> config,
     ffi.Pointer<ffi.Int> cts_ptr,
   ) {
-    return sp_return.fromValue(_sp_get_config_cts(config, cts_ptr));
+    return sp_return.fromValue(_sp_get_config_cts(
+      config,
+      cts_ptr,
+    ));
   }
 
   late final _sp_get_config_ctsPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
-    >
-  >('sp_get_config_cts');
-  late final _sp_get_config_cts =
-      _sp_get_config_ctsPtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port_config>,
+              ffi.Pointer<ffi.Int>)>>('sp_get_config_cts');
+  late final _sp_get_config_cts = _sp_get_config_ctsPtr.asFunction<
+      int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)>();
 
   /// Set the CTS pin behaviour in a port configuration.
   ///
@@ -987,16 +1054,22 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_set_config_cts(ffi.Pointer<sp_port_config> config, sp_cts cts) {
-    return sp_return.fromValue(_sp_set_config_cts(config, cts.value));
+  sp_return sp_set_config_cts(
+    ffi.Pointer<sp_port_config> config,
+    sp_cts cts,
+  ) {
+    return sp_return.fromValue(_sp_set_config_cts(
+      config,
+      cts.value,
+    ));
   }
 
   late final _sp_set_config_ctsPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Int)>
-  >('sp_set_config_cts');
-  late final _sp_set_config_cts =
-      _sp_set_config_ctsPtr
-          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<sp_port_config>, ffi.Int)>>('sp_set_config_cts');
+  late final _sp_set_config_cts = _sp_set_config_ctsPtr
+      .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
 
   /// Set the DTR pin behaviour for the specified serial port.
   ///
@@ -1006,13 +1079,19 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_set_dtr(ffi.Pointer<sp_port> port, sp_dtr dtr) {
-    return sp_return.fromValue(_sp_set_dtr(port, dtr.value));
+  sp_return sp_set_dtr(
+    ffi.Pointer<sp_port> port,
+    sp_dtr dtr,
+  ) {
+    return sp_return.fromValue(_sp_set_dtr(
+      port,
+      dtr.value,
+    ));
   }
 
   late final _sp_set_dtrPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>
-  >('sp_set_dtr');
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>>(
+      'sp_set_dtr');
   late final _sp_set_dtr =
       _sp_set_dtrPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
 
@@ -1031,19 +1110,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port_config> config,
     ffi.Pointer<ffi.Int> dtr_ptr,
   ) {
-    return sp_return.fromValue(_sp_get_config_dtr(config, dtr_ptr));
+    return sp_return.fromValue(_sp_get_config_dtr(
+      config,
+      dtr_ptr,
+    ));
   }
 
   late final _sp_get_config_dtrPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
-    >
-  >('sp_get_config_dtr');
-  late final _sp_get_config_dtr =
-      _sp_get_config_dtrPtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port_config>,
+              ffi.Pointer<ffi.Int>)>>('sp_get_config_dtr');
+  late final _sp_get_config_dtr = _sp_get_config_dtrPtr.asFunction<
+      int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)>();
 
   /// Set the DTR pin behaviour in a port configuration.
   ///
@@ -1053,16 +1131,22 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_set_config_dtr(ffi.Pointer<sp_port_config> config, sp_dtr dtr) {
-    return sp_return.fromValue(_sp_set_config_dtr(config, dtr.value));
+  sp_return sp_set_config_dtr(
+    ffi.Pointer<sp_port_config> config,
+    sp_dtr dtr,
+  ) {
+    return sp_return.fromValue(_sp_set_config_dtr(
+      config,
+      dtr.value,
+    ));
   }
 
   late final _sp_set_config_dtrPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Int)>
-  >('sp_set_config_dtr');
-  late final _sp_set_config_dtr =
-      _sp_set_config_dtrPtr
-          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<sp_port_config>, ffi.Int)>>('sp_set_config_dtr');
+  late final _sp_set_config_dtr = _sp_set_config_dtrPtr
+      .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
 
   /// Set the DSR pin behaviour for the specified serial port.
   ///
@@ -1072,13 +1156,19 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_set_dsr(ffi.Pointer<sp_port> port, sp_dsr dsr) {
-    return sp_return.fromValue(_sp_set_dsr(port, dsr.value));
+  sp_return sp_set_dsr(
+    ffi.Pointer<sp_port> port,
+    sp_dsr dsr,
+  ) {
+    return sp_return.fromValue(_sp_set_dsr(
+      port,
+      dsr.value,
+    ));
   }
 
   late final _sp_set_dsrPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>
-  >('sp_set_dsr');
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>>(
+      'sp_set_dsr');
   late final _sp_set_dsr =
       _sp_set_dsrPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
 
@@ -1097,19 +1187,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port_config> config,
     ffi.Pointer<ffi.Int> dsr_ptr,
   ) {
-    return sp_return.fromValue(_sp_get_config_dsr(config, dsr_ptr));
+    return sp_return.fromValue(_sp_get_config_dsr(
+      config,
+      dsr_ptr,
+    ));
   }
 
   late final _sp_get_config_dsrPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
-    >
-  >('sp_get_config_dsr');
-  late final _sp_get_config_dsr =
-      _sp_get_config_dsrPtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port_config>,
+              ffi.Pointer<ffi.Int>)>>('sp_get_config_dsr');
+  late final _sp_get_config_dsr = _sp_get_config_dsrPtr.asFunction<
+      int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)>();
 
   /// Set the DSR pin behaviour in a port configuration.
   ///
@@ -1119,16 +1208,22 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_set_config_dsr(ffi.Pointer<sp_port_config> config, sp_dsr dsr) {
-    return sp_return.fromValue(_sp_set_config_dsr(config, dsr.value));
+  sp_return sp_set_config_dsr(
+    ffi.Pointer<sp_port_config> config,
+    sp_dsr dsr,
+  ) {
+    return sp_return.fromValue(_sp_set_config_dsr(
+      config,
+      dsr.value,
+    ));
   }
 
   late final _sp_set_config_dsrPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Int)>
-  >('sp_set_config_dsr');
-  late final _sp_set_config_dsr =
-      _sp_set_config_dsrPtr
-          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<sp_port_config>, ffi.Int)>>('sp_set_config_dsr');
+  late final _sp_set_config_dsr = _sp_set_config_dsrPtr
+      .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
 
   /// Set the XON/XOFF configuration for the specified serial port.
   ///
@@ -1138,13 +1233,19 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_set_xon_xoff(ffi.Pointer<sp_port> port, sp_xonxoff xon_xoff) {
-    return sp_return.fromValue(_sp_set_xon_xoff(port, xon_xoff.value));
+  sp_return sp_set_xon_xoff(
+    ffi.Pointer<sp_port> port,
+    sp_xonxoff xon_xoff,
+  ) {
+    return sp_return.fromValue(_sp_set_xon_xoff(
+      port,
+      xon_xoff.value,
+    ));
   }
 
   late final _sp_set_xon_xoffPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>
-  >('sp_set_xon_xoff');
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.Int)>>(
+      'sp_set_xon_xoff');
   late final _sp_set_xon_xoff =
       _sp_set_xon_xoffPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
 
@@ -1163,19 +1264,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port_config> config,
     ffi.Pointer<ffi.Int> xon_xoff_ptr,
   ) {
-    return sp_return.fromValue(_sp_get_config_xon_xoff(config, xon_xoff_ptr));
+    return sp_return.fromValue(_sp_get_config_xon_xoff(
+      config,
+      xon_xoff_ptr,
+    ));
   }
 
   late final _sp_get_config_xon_xoffPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
-    >
-  >('sp_get_config_xon_xoff');
-  late final _sp_get_config_xon_xoff =
-      _sp_get_config_xon_xoffPtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port_config>,
+              ffi.Pointer<ffi.Int>)>>('sp_get_config_xon_xoff');
+  late final _sp_get_config_xon_xoff = _sp_get_config_xon_xoffPtr.asFunction<
+      int Function(ffi.Pointer<sp_port_config>, ffi.Pointer<ffi.Int>)>();
 
   /// Set the XON/XOFF configuration in a port configuration.
   ///
@@ -1189,15 +1289,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port_config> config,
     sp_xonxoff xon_xoff,
   ) {
-    return sp_return.fromValue(_sp_set_config_xon_xoff(config, xon_xoff.value));
+    return sp_return.fromValue(_sp_set_config_xon_xoff(
+      config,
+      xon_xoff.value,
+    ));
   }
 
   late final _sp_set_config_xon_xoffPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.Int)>
-  >('sp_set_config_xon_xoff');
-  late final _sp_set_config_xon_xoff =
-      _sp_set_config_xon_xoffPtr
-          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<sp_port_config>, ffi.Int)>>('sp_set_config_xon_xoff');
+  late final _sp_set_config_xon_xoff = _sp_set_config_xon_xoffPtr
+      .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
 
   /// Set the flow control type in a port configuration.
   ///
@@ -1216,19 +1319,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port_config> config,
     sp_flowcontrol flowcontrol,
   ) {
-    return sp_return.fromValue(
-      _sp_set_config_flowcontrol(config, flowcontrol.value),
-    );
+    return sp_return.fromValue(_sp_set_config_flowcontrol(
+      config,
+      flowcontrol.value,
+    ));
   }
 
   late final _sp_set_config_flowcontrolPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<sp_port_config>, ffi.UnsignedInt)
-    >
-  >('sp_set_config_flowcontrol');
-  late final _sp_set_config_flowcontrol =
-      _sp_set_config_flowcontrolPtr
-          .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port_config>,
+              ffi.UnsignedInt)>>('sp_set_config_flowcontrol');
+  late final _sp_set_config_flowcontrol = _sp_set_config_flowcontrolPtr
+      .asFunction<int Function(ffi.Pointer<sp_port_config>, int)>();
 
   /// Set the flow control type for the specified serial port.
   ///
@@ -1247,15 +1349,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port> port,
     sp_flowcontrol flowcontrol,
   ) {
-    return sp_return.fromValue(_sp_set_flowcontrol(port, flowcontrol.value));
+    return sp_return.fromValue(_sp_set_flowcontrol(
+      port,
+      flowcontrol.value,
+    ));
   }
 
   late final _sp_set_flowcontrolPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.UnsignedInt)>
-  >('sp_set_flowcontrol');
-  late final _sp_set_flowcontrol =
-      _sp_set_flowcontrolPtr
-          .asFunction<int Function(ffi.Pointer<sp_port>, int)>();
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<sp_port>, ffi.UnsignedInt)>>('sp_set_flowcontrol');
+  late final _sp_set_flowcontrol = _sp_set_flowcontrolPtr
+      .asFunction<int Function(ffi.Pointer<sp_port>, int)>();
 
   /// Read bytes from the specified serial port, blocking until complete.
   ///
@@ -1287,24 +1392,20 @@ class FlutterSerialBindings {
     int count,
     int timeout_ms,
   ) {
-    return sp_return.fromValue(_sp_blocking_read(port, buf, count, timeout_ms));
+    return sp_return.fromValue(_sp_blocking_read(
+      port,
+      buf,
+      count,
+      timeout_ms,
+    ));
   }
 
   late final _sp_blocking_readPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(
-        ffi.Pointer<sp_port>,
-        ffi.Pointer<ffi.Void>,
-        ffi.Size,
-        ffi.UnsignedInt,
-      )
-    >
-  >('sp_blocking_read');
-  late final _sp_blocking_read =
-      _sp_blocking_readPtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, int, int)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>,
+              ffi.Size, ffi.UnsignedInt)>>('sp_blocking_read');
+  late final _sp_blocking_read = _sp_blocking_readPtr.asFunction<
+      int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, int, int)>();
 
   /// Read bytes from the specified serial port, returning as soon as any data is
   /// available.
@@ -1336,26 +1437,20 @@ class FlutterSerialBindings {
     int count,
     int timeout_ms,
   ) {
-    return sp_return.fromValue(
-      _sp_blocking_read_next(port, buf, count, timeout_ms),
-    );
+    return sp_return.fromValue(_sp_blocking_read_next(
+      port,
+      buf,
+      count,
+      timeout_ms,
+    ));
   }
 
   late final _sp_blocking_read_nextPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(
-        ffi.Pointer<sp_port>,
-        ffi.Pointer<ffi.Void>,
-        ffi.Size,
-        ffi.UnsignedInt,
-      )
-    >
-  >('sp_blocking_read_next');
-  late final _sp_blocking_read_next =
-      _sp_blocking_read_nextPtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, int, int)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>,
+              ffi.Size, ffi.UnsignedInt)>>('sp_blocking_read_next');
+  late final _sp_blocking_read_next = _sp_blocking_read_nextPtr.asFunction<
+      int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, int, int)>();
 
   /// Read bytes from the specified serial port, without blocking.
   ///
@@ -1373,19 +1468,19 @@ class FlutterSerialBindings {
     ffi.Pointer<ffi.Void> buf,
     int count,
   ) {
-    return sp_return.fromValue(_sp_nonblocking_read(port, buf, count));
+    return sp_return.fromValue(_sp_nonblocking_read(
+      port,
+      buf,
+      count,
+    ));
   }
 
   late final _sp_nonblocking_readPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, ffi.Size)
-    >
-  >('sp_nonblocking_read');
-  late final _sp_nonblocking_read =
-      _sp_nonblocking_readPtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, int)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>,
+              ffi.Size)>>('sp_nonblocking_read');
+  late final _sp_nonblocking_read = _sp_nonblocking_readPtr.asFunction<
+      int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, int)>();
 
   /// Write bytes to the specified serial port, blocking until complete.
   ///
@@ -1425,26 +1520,20 @@ class FlutterSerialBindings {
     int count,
     int timeout_ms,
   ) {
-    return sp_return.fromValue(
-      _sp_blocking_write(port, buf, count, timeout_ms),
-    );
+    return sp_return.fromValue(_sp_blocking_write(
+      port,
+      buf,
+      count,
+      timeout_ms,
+    ));
   }
 
   late final _sp_blocking_writePtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(
-        ffi.Pointer<sp_port>,
-        ffi.Pointer<ffi.Void>,
-        ffi.Size,
-        ffi.UnsignedInt,
-      )
-    >
-  >('sp_blocking_write');
-  late final _sp_blocking_write =
-      _sp_blocking_writePtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, int, int)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>,
+              ffi.Size, ffi.UnsignedInt)>>('sp_blocking_write');
+  late final _sp_blocking_write = _sp_blocking_writePtr.asFunction<
+      int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, int, int)>();
 
   /// Write bytes to the specified serial port, without blocking.
   ///
@@ -1468,19 +1557,19 @@ class FlutterSerialBindings {
     ffi.Pointer<ffi.Void> buf,
     int count,
   ) {
-    return sp_return.fromValue(_sp_nonblocking_write(port, buf, count));
+    return sp_return.fromValue(_sp_nonblocking_write(
+      port,
+      buf,
+      count,
+    ));
   }
 
   late final _sp_nonblocking_writePtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, ffi.Size)
-    >
-  >('sp_nonblocking_write');
-  late final _sp_nonblocking_write =
-      _sp_nonblocking_writePtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, int)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>,
+              ffi.Size)>>('sp_nonblocking_write');
+  late final _sp_nonblocking_write = _sp_nonblocking_writePtr.asFunction<
+      int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.Void>, int)>();
 
   /// Gets the number of bytes waiting in the input buffer.
   ///
@@ -1489,14 +1578,17 @@ class FlutterSerialBindings {
   /// @return Number of bytes waiting on success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_input_waiting(ffi.Pointer<sp_port> port) {
-    return sp_return.fromValue(_sp_input_waiting(port));
+  sp_return sp_input_waiting(
+    ffi.Pointer<sp_port> port,
+  ) {
+    return sp_return.fromValue(_sp_input_waiting(
+      port,
+    ));
   }
 
   late final _sp_input_waitingPtr =
       _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>)>>(
-        'sp_input_waiting',
-      );
+          'sp_input_waiting');
   late final _sp_input_waiting =
       _sp_input_waitingPtr.asFunction<int Function(ffi.Pointer<sp_port>)>();
 
@@ -1507,14 +1599,17 @@ class FlutterSerialBindings {
   /// @return Number of bytes waiting on success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_output_waiting(ffi.Pointer<sp_port> port) {
-    return sp_return.fromValue(_sp_output_waiting(port));
+  sp_return sp_output_waiting(
+    ffi.Pointer<sp_port> port,
+  ) {
+    return sp_return.fromValue(_sp_output_waiting(
+      port,
+    ));
   }
 
   late final _sp_output_waitingPtr =
       _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>)>>(
-        'sp_output_waiting',
-      );
+          'sp_output_waiting');
   late final _sp_output_waiting =
       _sp_output_waitingPtr.asFunction<int Function(ffi.Pointer<sp_port>)>();
 
@@ -1526,13 +1621,19 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_flush(ffi.Pointer<sp_port> port, sp_buffer buffers) {
-    return sp_return.fromValue(_sp_flush(port, buffers.value));
+  sp_return sp_flush(
+    ffi.Pointer<sp_port> port,
+    sp_buffer buffers,
+  ) {
+    return sp_return.fromValue(_sp_flush(
+      port,
+      buffers.value,
+    ));
   }
 
   late final _sp_flushPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>, ffi.UnsignedInt)>
-  >('sp_flush');
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port>, ffi.UnsignedInt)>>('sp_flush');
   late final _sp_flush =
       _sp_flushPtr.asFunction<int Function(ffi.Pointer<sp_port>, int)>();
 
@@ -1550,14 +1651,17 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_drain(ffi.Pointer<sp_port> port) {
-    return sp_return.fromValue(_sp_drain(port));
+  sp_return sp_drain(
+    ffi.Pointer<sp_port> port,
+  ) {
+    return sp_return.fromValue(_sp_drain(
+      port,
+    ));
   }
 
   late final _sp_drainPtr =
       _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>)>>(
-        'sp_drain',
-      );
+          'sp_drain');
   late final _sp_drain =
       _sp_drainPtr.asFunction<int Function(ffi.Pointer<sp_port>)>();
 
@@ -1578,15 +1682,17 @@ class FlutterSerialBindings {
   sp_return sp_new_event_set(
     ffi.Pointer<ffi.Pointer<sp_event_set>> result_ptr,
   ) {
-    return sp_return.fromValue(_sp_new_event_set(result_ptr));
+    return sp_return.fromValue(_sp_new_event_set(
+      result_ptr,
+    ));
   }
 
   late final _sp_new_event_setPtr = _lookup<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Pointer<sp_event_set>>)>
-  >('sp_new_event_set');
-  late final _sp_new_event_set =
-      _sp_new_event_setPtr
-          .asFunction<int Function(ffi.Pointer<ffi.Pointer<sp_event_set>>)>();
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<ffi.Pointer<sp_event_set>>)>>('sp_new_event_set');
+  late final _sp_new_event_set = _sp_new_event_setPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Pointer<sp_event_set>>)>();
 
   /// Add events to a struct sp_event_set for a given port.
   ///
@@ -1608,25 +1714,19 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port> port,
     sp_event mask,
   ) {
-    return sp_return.fromValue(
-      _sp_add_port_events(event_set, port, mask.value),
-    );
+    return sp_return.fromValue(_sp_add_port_events(
+      event_set,
+      port,
+      mask.value,
+    ));
   }
 
   late final _sp_add_port_eventsPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(
-        ffi.Pointer<sp_event_set>,
-        ffi.Pointer<sp_port>,
-        ffi.UnsignedInt,
-      )
-    >
-  >('sp_add_port_events');
-  late final _sp_add_port_events =
-      _sp_add_port_eventsPtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_event_set>, ffi.Pointer<sp_port>, int)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_event_set>, ffi.Pointer<sp_port>,
+              ffi.UnsignedInt)>>('sp_add_port_events');
+  late final _sp_add_port_events = _sp_add_port_eventsPtr.asFunction<
+      int Function(ffi.Pointer<sp_event_set>, ffi.Pointer<sp_port>, int)>();
 
   /// Wait for any of a set of events to occur.
   ///
@@ -1636,15 +1736,20 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_wait(ffi.Pointer<sp_event_set> event_set, int timeout_ms) {
-    return sp_return.fromValue(_sp_wait(event_set, timeout_ms));
+  sp_return sp_wait(
+    ffi.Pointer<sp_event_set> event_set,
+    int timeout_ms,
+  ) {
+    return sp_return.fromValue(_sp_wait(
+      event_set,
+      timeout_ms,
+    ));
   }
 
   late final _sp_waitPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<sp_event_set>, ffi.UnsignedInt)
-    >
-  >('sp_wait');
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<sp_event_set>, ffi.UnsignedInt)>>('sp_wait');
   late final _sp_wait =
       _sp_waitPtr.asFunction<int Function(ffi.Pointer<sp_event_set>, int)>();
 
@@ -1653,17 +1758,19 @@ class FlutterSerialBindings {
   /// @param[in] event_set Event set to free. Must not be NULL.
   ///
   /// @since 0.1.0
-  void sp_free_event_set(ffi.Pointer<sp_event_set> event_set) {
-    return _sp_free_event_set(event_set);
+  void sp_free_event_set(
+    ffi.Pointer<sp_event_set> event_set,
+  ) {
+    return _sp_free_event_set(
+      event_set,
+    );
   }
 
   late final _sp_free_event_setPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<sp_event_set>)>>(
-        'sp_free_event_set',
-      );
-  late final _sp_free_event_set =
-      _sp_free_event_setPtr
-          .asFunction<void Function(ffi.Pointer<sp_event_set>)>();
+          'sp_free_event_set');
+  late final _sp_free_event_set = _sp_free_event_setPtr
+      .asFunction<void Function(ffi.Pointer<sp_event_set>)>();
 
   /// Gets the status of the control signals for the specified port.
   ///
@@ -1683,19 +1790,18 @@ class FlutterSerialBindings {
     ffi.Pointer<sp_port> port,
     ffi.Pointer<ffi.UnsignedInt> signal_mask,
   ) {
-    return sp_return.fromValue(_sp_get_signals(port, signal_mask));
+    return sp_return.fromValue(_sp_get_signals(
+      port,
+      signal_mask,
+    ));
   }
 
   late final _sp_get_signalsPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.UnsignedInt>)
-    >
-  >('sp_get_signals');
-  late final _sp_get_signals =
-      _sp_get_signalsPtr
-          .asFunction<
-            int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.UnsignedInt>)
-          >();
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<sp_port>,
+              ffi.Pointer<ffi.UnsignedInt>)>>('sp_get_signals');
+  late final _sp_get_signals = _sp_get_signalsPtr.asFunction<
+      int Function(ffi.Pointer<sp_port>, ffi.Pointer<ffi.UnsignedInt>)>();
 
   /// Put the port transmit line into the break state.
   ///
@@ -1704,14 +1810,17 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_start_break(ffi.Pointer<sp_port> port) {
-    return sp_return.fromValue(_sp_start_break(port));
+  sp_return sp_start_break(
+    ffi.Pointer<sp_port> port,
+  ) {
+    return sp_return.fromValue(_sp_start_break(
+      port,
+    ));
   }
 
   late final _sp_start_breakPtr =
       _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>)>>(
-        'sp_start_break',
-      );
+          'sp_start_break');
   late final _sp_start_break =
       _sp_start_breakPtr.asFunction<int Function(ffi.Pointer<sp_port>)>();
 
@@ -1722,14 +1831,17 @@ class FlutterSerialBindings {
   /// @return SP_OK upon success, a negative error code otherwise.
   ///
   /// @since 0.1.0
-  sp_return sp_end_break(ffi.Pointer<sp_port> port) {
-    return sp_return.fromValue(_sp_end_break(port));
+  sp_return sp_end_break(
+    ffi.Pointer<sp_port> port,
+  ) {
+    return sp_return.fromValue(_sp_end_break(
+      port,
+    ));
   }
 
   late final _sp_end_breakPtr =
       _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>)>>(
-        'sp_end_break',
-      );
+          'sp_end_break');
   late final _sp_end_break =
       _sp_end_breakPtr.asFunction<int Function(ffi.Pointer<sp_port>)>();
 
@@ -1771,8 +1883,7 @@ class FlutterSerialBindings {
 
   late final _sp_last_error_messagePtr =
       _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
-        'sp_last_error_message',
-      );
+          'sp_last_error_message');
   late final _sp_last_error_message =
       _sp_last_error_messagePtr.asFunction<ffi.Pointer<ffi.Char> Function()>();
 
@@ -1781,17 +1892,19 @@ class FlutterSerialBindings {
   /// @param[in] message The error message string to free. Must not be NULL.
   ///
   /// @since 0.1.0
-  void sp_free_error_message(ffi.Pointer<ffi.Char> message) {
-    return _sp_free_error_message(message);
+  void sp_free_error_message(
+    ffi.Pointer<ffi.Char> message,
+  ) {
+    return _sp_free_error_message(
+      message,
+    );
   }
 
   late final _sp_free_error_messagePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-        'sp_free_error_message',
-      );
-  late final _sp_free_error_message =
-      _sp_free_error_messagePtr
-          .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+          'sp_free_error_message');
+  late final _sp_free_error_message = _sp_free_error_messagePtr
+      .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
 
   /// Set the handler function for library debugging messages.
   ///
@@ -1810,33 +1923,26 @@ class FlutterSerialBindings {
   /// @since 0.1.0
   void sp_set_debug_handler(
     ffi.Pointer<
-      ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char> format)>
-    >
-    handler,
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char> format)>>
+        handler,
   ) {
-    return _sp_set_debug_handler(handler);
+    return _sp_set_debug_handler(
+      handler,
+    );
   }
 
   late final _sp_set_debug_handlerPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Void Function(
-        ffi.Pointer<
-          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char> format)>
-        >,
-      )
-    >
-  >('sp_set_debug_handler');
-  late final _sp_set_debug_handler =
-      _sp_set_debug_handlerPtr
-          .asFunction<
-            void Function(
-              ffi.Pointer<
-                ffi.NativeFunction<
-                  ffi.Void Function(ffi.Pointer<ffi.Char> format)
-                >
-              >,
-            )
-          >();
+          ffi.NativeFunction<
+              ffi.Void Function(
+                  ffi.Pointer<
+                      ffi.NativeFunction<
+                          ffi.Void Function(ffi.Pointer<ffi.Char> format)>>)>>(
+      'sp_set_debug_handler');
+  late final _sp_set_debug_handler = _sp_set_debug_handlerPtr.asFunction<
+      void Function(
+          ffi.Pointer<
+              ffi.NativeFunction<
+                  ffi.Void Function(ffi.Pointer<ffi.Char> format)>>)>();
 
   /// Default handler function for library debugging messages.
   ///
@@ -1848,17 +1954,19 @@ class FlutterSerialBindings {
   /// @param[in] ... The variable length argument list to use.
   ///
   /// @since 0.1.0
-  void sp_default_debug_handler(ffi.Pointer<ffi.Char> format) {
-    return _sp_default_debug_handler(format);
+  void sp_default_debug_handler(
+    ffi.Pointer<ffi.Char> format,
+  ) {
+    return _sp_default_debug_handler(
+      format,
+    );
   }
 
   late final _sp_default_debug_handlerPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-        'sp_default_debug_handler',
-      );
-  late final _sp_default_debug_handler =
-      _sp_default_debug_handlerPtr
-          .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+          'sp_default_debug_handler');
+  late final _sp_default_debug_handler = _sp_default_debug_handlerPtr
+      .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
 
   /// Get the major libserialport package version number.
   ///
@@ -1871,8 +1979,7 @@ class FlutterSerialBindings {
 
   late final _sp_get_major_package_versionPtr =
       _lookup<ffi.NativeFunction<ffi.Int Function()>>(
-        'sp_get_major_package_version',
-      );
+          'sp_get_major_package_version');
   late final _sp_get_major_package_version =
       _sp_get_major_package_versionPtr.asFunction<int Function()>();
 
@@ -1887,8 +1994,7 @@ class FlutterSerialBindings {
 
   late final _sp_get_minor_package_versionPtr =
       _lookup<ffi.NativeFunction<ffi.Int Function()>>(
-        'sp_get_minor_package_version',
-      );
+          'sp_get_minor_package_version');
   late final _sp_get_minor_package_version =
       _sp_get_minor_package_versionPtr.asFunction<int Function()>();
 
@@ -1903,8 +2009,7 @@ class FlutterSerialBindings {
 
   late final _sp_get_micro_package_versionPtr =
       _lookup<ffi.NativeFunction<ffi.Int Function()>>(
-        'sp_get_micro_package_version',
-      );
+          'sp_get_micro_package_version');
   late final _sp_get_micro_package_version =
       _sp_get_micro_package_versionPtr.asFunction<int Function()>();
 
@@ -1920,11 +2025,9 @@ class FlutterSerialBindings {
 
   late final _sp_get_package_version_stringPtr =
       _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
-        'sp_get_package_version_string',
-      );
-  late final _sp_get_package_version_string =
-      _sp_get_package_version_stringPtr
-          .asFunction<ffi.Pointer<ffi.Char> Function()>();
+          'sp_get_package_version_string');
+  late final _sp_get_package_version_string = _sp_get_package_version_stringPtr
+      .asFunction<ffi.Pointer<ffi.Char> Function()>();
 
   /// Get the "current" part of the libserialport library version number.
   ///
@@ -1937,8 +2040,7 @@ class FlutterSerialBindings {
 
   late final _sp_get_current_lib_versionPtr =
       _lookup<ffi.NativeFunction<ffi.Int Function()>>(
-        'sp_get_current_lib_version',
-      );
+          'sp_get_current_lib_version');
   late final _sp_get_current_lib_version =
       _sp_get_current_lib_versionPtr.asFunction<int Function()>();
 
@@ -1953,8 +2055,7 @@ class FlutterSerialBindings {
 
   late final _sp_get_revision_lib_versionPtr =
       _lookup<ffi.NativeFunction<ffi.Int Function()>>(
-        'sp_get_revision_lib_version',
-      );
+          'sp_get_revision_lib_version');
   late final _sp_get_revision_lib_version =
       _sp_get_revision_lib_versionPtr.asFunction<int Function()>();
 
@@ -1984,11 +2085,9 @@ class FlutterSerialBindings {
 
   late final _sp_get_lib_version_stringPtr =
       _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
-        'sp_get_lib_version_string',
-      );
-  late final _sp_get_lib_version_string =
-      _sp_get_lib_version_stringPtr
-          .asFunction<ffi.Pointer<ffi.Char> Function()>();
+          'sp_get_lib_version_string');
+  late final _sp_get_lib_version_string = _sp_get_lib_version_stringPtr
+      .asFunction<ffi.Pointer<ffi.Char> Function()>();
 }
 
 /// Return values.
@@ -2012,16 +2111,15 @@ class sp_return {
   const sp_return(this.value, this.name);
 
   static sp_return fromValue(int value) => switch (value) {
-    0 => SP_OK,
-    -1 => SP_ERR_ARG,
-    -2 => SP_ERR_FAIL,
-    -3 => SP_ERR_MEM,
-    -4 => SP_ERR_SUPP,
-    _ =>
-      value > 0
-          ? sp_return(value, 'SP_OK')
-          : throw ArgumentError("Unknown value for sp_return: $value"),
-  };
+        0 => SP_OK,
+        -1 => SP_ERR_ARG,
+        -2 => SP_ERR_FAIL,
+        -3 => SP_ERR_MEM,
+        -4 => SP_ERR_SUPP,
+        _ => value > 0
+            ? sp_return(value, 'SP_OK')
+            : throw ArgumentError("Unknown value for sp_return: $value"),
+      };
 }
 
 /// Port access modes.
@@ -2039,11 +2137,11 @@ enum sp_mode {
   const sp_mode(this.value);
 
   static sp_mode fromValue(int value) => switch (value) {
-    1 => SP_MODE_READ,
-    2 => SP_MODE_WRITE,
-    3 => SP_MODE_READ_WRITE,
-    _ => throw ArgumentError("Unknown value for sp_mode: $value"),
-  };
+        1 => SP_MODE_READ,
+        2 => SP_MODE_WRITE,
+        3 => SP_MODE_READ_WRITE,
+        _ => throw ArgumentError("Unknown value for sp_mode: $value"),
+      };
 }
 
 /// Port events.
@@ -2061,11 +2159,11 @@ enum sp_event {
   const sp_event(this.value);
 
   static sp_event fromValue(int value) => switch (value) {
-    1 => SP_EVENT_RX_READY,
-    2 => SP_EVENT_TX_READY,
-    4 => SP_EVENT_ERROR,
-    _ => throw ArgumentError("Unknown value for sp_event: $value"),
-  };
+        1 => SP_EVENT_RX_READY,
+        2 => SP_EVENT_TX_READY,
+        4 => SP_EVENT_ERROR,
+        _ => throw ArgumentError("Unknown value for sp_event: $value"),
+      };
 }
 
 /// Buffer selection.
@@ -2083,11 +2181,11 @@ enum sp_buffer {
   const sp_buffer(this.value);
 
   static sp_buffer fromValue(int value) => switch (value) {
-    1 => SP_BUF_INPUT,
-    2 => SP_BUF_OUTPUT,
-    3 => SP_BUF_BOTH,
-    _ => throw ArgumentError("Unknown value for sp_buffer: $value"),
-  };
+        1 => SP_BUF_INPUT,
+        2 => SP_BUF_OUTPUT,
+        3 => SP_BUF_BOTH,
+        _ => throw ArgumentError("Unknown value for sp_buffer: $value"),
+      };
 }
 
 /// Parity settings.
@@ -2114,14 +2212,14 @@ enum sp_parity {
   const sp_parity(this.value);
 
   static sp_parity fromValue(int value) => switch (value) {
-    -1 => SP_PARITY_INVALID,
-    0 => SP_PARITY_NONE,
-    1 => SP_PARITY_ODD,
-    2 => SP_PARITY_EVEN,
-    3 => SP_PARITY_MARK,
-    4 => SP_PARITY_SPACE,
-    _ => throw ArgumentError("Unknown value for sp_parity: $value"),
-  };
+        -1 => SP_PARITY_INVALID,
+        0 => SP_PARITY_NONE,
+        1 => SP_PARITY_ODD,
+        2 => SP_PARITY_EVEN,
+        3 => SP_PARITY_MARK,
+        4 => SP_PARITY_SPACE,
+        _ => throw ArgumentError("Unknown value for sp_parity: $value"),
+      };
 }
 
 /// RTS pin behaviour.
@@ -2142,12 +2240,12 @@ enum sp_rts {
   const sp_rts(this.value);
 
   static sp_rts fromValue(int value) => switch (value) {
-    -1 => SP_RTS_INVALID,
-    0 => SP_RTS_OFF,
-    1 => SP_RTS_ON,
-    2 => SP_RTS_FLOW_CONTROL,
-    _ => throw ArgumentError("Unknown value for sp_rts: $value"),
-  };
+        -1 => SP_RTS_INVALID,
+        0 => SP_RTS_OFF,
+        1 => SP_RTS_ON,
+        2 => SP_RTS_FLOW_CONTROL,
+        _ => throw ArgumentError("Unknown value for sp_rts: $value"),
+      };
 }
 
 /// CTS pin behaviour.
@@ -2165,11 +2263,11 @@ enum sp_cts {
   const sp_cts(this.value);
 
   static sp_cts fromValue(int value) => switch (value) {
-    -1 => SP_CTS_INVALID,
-    0 => SP_CTS_IGNORE,
-    1 => SP_CTS_FLOW_CONTROL,
-    _ => throw ArgumentError("Unknown value for sp_cts: $value"),
-  };
+        -1 => SP_CTS_INVALID,
+        0 => SP_CTS_IGNORE,
+        1 => SP_CTS_FLOW_CONTROL,
+        _ => throw ArgumentError("Unknown value for sp_cts: $value"),
+      };
 }
 
 /// DTR pin behaviour.
@@ -2190,12 +2288,12 @@ enum sp_dtr {
   const sp_dtr(this.value);
 
   static sp_dtr fromValue(int value) => switch (value) {
-    -1 => SP_DTR_INVALID,
-    0 => SP_DTR_OFF,
-    1 => SP_DTR_ON,
-    2 => SP_DTR_FLOW_CONTROL,
-    _ => throw ArgumentError("Unknown value for sp_dtr: $value"),
-  };
+        -1 => SP_DTR_INVALID,
+        0 => SP_DTR_OFF,
+        1 => SP_DTR_ON,
+        2 => SP_DTR_FLOW_CONTROL,
+        _ => throw ArgumentError("Unknown value for sp_dtr: $value"),
+      };
 }
 
 /// DSR pin behaviour.
@@ -2213,11 +2311,11 @@ enum sp_dsr {
   const sp_dsr(this.value);
 
   static sp_dsr fromValue(int value) => switch (value) {
-    -1 => SP_DSR_INVALID,
-    0 => SP_DSR_IGNORE,
-    1 => SP_DSR_FLOW_CONTROL,
-    _ => throw ArgumentError("Unknown value for sp_dsr: $value"),
-  };
+        -1 => SP_DSR_INVALID,
+        0 => SP_DSR_IGNORE,
+        1 => SP_DSR_FLOW_CONTROL,
+        _ => throw ArgumentError("Unknown value for sp_dsr: $value"),
+      };
 }
 
 /// XON/XOFF flow control behaviour.
@@ -2241,13 +2339,13 @@ enum sp_xonxoff {
   const sp_xonxoff(this.value);
 
   static sp_xonxoff fromValue(int value) => switch (value) {
-    -1 => SP_XONXOFF_INVALID,
-    0 => SP_XONXOFF_DISABLED,
-    1 => SP_XONXOFF_IN,
-    2 => SP_XONXOFF_OUT,
-    3 => SP_XONXOFF_INOUT,
-    _ => throw ArgumentError("Unknown value for sp_xonxoff: $value"),
-  };
+        -1 => SP_XONXOFF_INVALID,
+        0 => SP_XONXOFF_DISABLED,
+        1 => SP_XONXOFF_IN,
+        2 => SP_XONXOFF_OUT,
+        3 => SP_XONXOFF_INOUT,
+        _ => throw ArgumentError("Unknown value for sp_xonxoff: $value"),
+      };
 }
 
 /// Standard flow control combinations.
@@ -2268,12 +2366,12 @@ enum sp_flowcontrol {
   const sp_flowcontrol(this.value);
 
   static sp_flowcontrol fromValue(int value) => switch (value) {
-    0 => SP_FLOWCONTROL_NONE,
-    1 => SP_FLOWCONTROL_XONXOFF,
-    2 => SP_FLOWCONTROL_RTSCTS,
-    3 => SP_FLOWCONTROL_DTRDSR,
-    _ => throw ArgumentError("Unknown value for sp_flowcontrol: $value"),
-  };
+        0 => SP_FLOWCONTROL_NONE,
+        1 => SP_FLOWCONTROL_XONXOFF,
+        2 => SP_FLOWCONTROL_RTSCTS,
+        3 => SP_FLOWCONTROL_DTRDSR,
+        _ => throw ArgumentError("Unknown value for sp_flowcontrol: $value"),
+      };
 }
 
 /// Input signals.
@@ -2294,12 +2392,12 @@ enum sp_signal {
   const sp_signal(this.value);
 
   static sp_signal fromValue(int value) => switch (value) {
-    1 => SP_SIG_CTS,
-    2 => SP_SIG_DSR,
-    4 => SP_SIG_DCD,
-    8 => SP_SIG_RI,
-    _ => throw ArgumentError("Unknown value for sp_signal: $value"),
-  };
+        1 => SP_SIG_CTS,
+        2 => SP_SIG_DSR,
+        4 => SP_SIG_DCD,
+        8 => SP_SIG_RI,
+        _ => throw ArgumentError("Unknown value for sp_signal: $value"),
+      };
 }
 
 /// Transport types.
@@ -2319,11 +2417,11 @@ enum sp_transport {
   const sp_transport(this.value);
 
   static sp_transport fromValue(int value) => switch (value) {
-    0 => SP_TRANSPORT_NATIVE,
-    1 => SP_TRANSPORT_USB,
-    2 => SP_TRANSPORT_BLUETOOTH,
-    _ => throw ArgumentError("Unknown value for sp_transport: $value"),
-  };
+        0 => SP_TRANSPORT_NATIVE,
+        1 => SP_TRANSPORT_USB,
+        2 => SP_TRANSPORT_BLUETOOTH,
+        _ => throw ArgumentError("Unknown value for sp_transport: $value"),
+      };
 }
 
 /// @struct sp_port

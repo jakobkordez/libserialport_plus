@@ -10,7 +10,6 @@ void main() {
   test('Get port list', () {
     final ports = SerialPort.listPorts();
 
-    print('Got ports: $ports');
     expect(ports, isNotEmpty);
   });
 
@@ -62,9 +61,9 @@ void main() {
     final port2 = SerialPort(secondPort);
 
     port1.openReadWrite();
-    port1.setConfig(SerialPortConfig(bits: 8));
+    port1.setConfig(const SerialPortConfig(bits: 8));
     port2.openReadWrite();
-    port2.setConfig(SerialPortConfig(bits: 8));
+    port2.setConfig(const SerialPortConfig(bits: 8));
 
     final msg = Uint8List.fromList(List.generate(512, (i) => i % 256));
     final written = port1.write(msg);
@@ -100,7 +99,7 @@ void main() {
   });
 
   test('Set config', () {
-    final config = SerialPortConfig(
+    const config = SerialPortConfig(
       baudRate: 115200,
       bits: 8,
       parity: SerialPortParity.mark,

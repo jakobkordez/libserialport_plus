@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:flutter_serial/flutter_serial.dart' as flutter_serial;
-
 void main() {
   runApp(const MyApp());
 }

@@ -1,15 +1,16 @@
 import 'dart:ffi';
 import 'dart:typed_data';
 
+import 'package:equatable/equatable.dart';
 import 'package:ffi/ffi.dart';
 import 'package:flutter_serial/flutter_serial_bindings_generated.dart';
 import 'package:flutter_serial/src/lib.dart';
 import 'package:flutter_serial/src/serial_port_config.dart';
 
-class SerialPort {
+class SerialPort extends Equatable {
   final Pointer<sp_port> _port;
 
-  SerialPort._(this._port);
+  const SerialPort._(this._port);
 
   factory SerialPort(String portName, {SerialPortConfig? config}) {
     final out = calloc<Pointer<sp_port>>();
@@ -41,10 +42,10 @@ class SerialPort {
   void close() => assertReturn(lib.sp_close(_port));
 
   bool isOpen() => using((arena) {
-    final ptr = arena<Int>();
-    assertReturn(lib.sp_get_port_handle(_port, ptr.cast()));
-    return ptr.value > 0;
-  });
+        final ptr = arena<Int>();
+        assertReturn(lib.sp_get_port_handle(_port, ptr.cast()));
+        return ptr.value > 0;
+      });
 
   //#endregion
 
@@ -52,59 +53,61 @@ class SerialPort {
 
   /// Read bytes from the specified serial port, blocking until complete.
   Uint8List read(int bytes, {int timeout = 0}) => using((arena) {
-    final ptr = arena<Uint8>(bytes);
-    final ret = lib.sp_blocking_read(_port, ptr.cast(), bytes, timeout);
-    return Uint8List.fromList(ptr.asTypedList(assertReturn(ret)));
-  });
+        final ptr = arena<Uint8>(bytes);
+        final ret = lib.sp_blocking_read(_port, ptr.cast(), bytes, timeout);
+        return Uint8List.fromList(ptr.asTypedList(assertReturn(ret)));
+      });
 
   /// Write bytes to the specified serial port, blocking until complete.
   int write(Uint8List bytes, {int timeout = 0}) => using((arena) {
-    final len = bytes.length;
-    final ptr = arena<Uint8>(len);
-    ptr.asTypedList(len).setAll(0, bytes);
-    final ret = lib.sp_blocking_write(_port, ptr.cast(), bytes.length, timeout);
-    return assertReturn(ret);
-  });
+        final len = bytes.length;
+        final ptr = arena<Uint8>(len);
+        ptr.asTypedList(len).setAll(0, bytes);
+        final ret = lib.sp_blocking_write(_port, ptr.cast(), len, timeout);
+        return assertReturn(ret);
+      });
 
   //#endregion
 
   //#region Configuration
 
   SerialPortConfig getConfig() => using((arena) {
-    final ptr = arena<Pointer<sp_port_config>>();
-    assertReturn(lib.sp_new_config(ptr));
-    assertReturn(lib.sp_get_config(_port, ptr.value));
+        final ptr = arena<Pointer<sp_port_config>>();
+        assertReturn(lib.sp_new_config(ptr));
+        assertReturn(lib.sp_get_config(_port, ptr.value));
 
-    final valPtr = arena<Int>();
-    get(sp_return Function(Pointer<sp_port_config>, Pointer<Int>) func) {
-      assertReturn(func(ptr.value, valPtr));
-      return valPtr.value;
-    }
+        final valPtr = arena<Int>();
+        get(sp_return Function(Pointer<sp_port_config>, Pointer<Int>) func) {
+          assertReturn(func(ptr.value, valPtr));
+          return valPtr.value;
+        }
 
-    final baudRate = get(lib.sp_get_config_baudrate);
-    final bits = get(lib.sp_get_config_bits);
-    final parity = SerialPortParity.fromValue(get(lib.sp_get_config_parity));
-    final stopBits = get(lib.sp_get_config_stopbits);
-    final rts = SerialPortRts.fromValue(get(lib.sp_get_config_rts));
-    final cts = SerialPortCts.fromValue(get(lib.sp_get_config_cts));
-    final dtr = SerialPortDtr.fromValue(get(lib.sp_get_config_dtr));
-    final dsr = SerialPortDsr.fromValue(get(lib.sp_get_config_dsr));
-    final flow = SerialPortXonXoff.fromValue(get(lib.sp_get_config_xon_xoff));
+        final baudRate = get(lib.sp_get_config_baudrate);
+        final bits = get(lib.sp_get_config_bits);
+        final parity =
+            SerialPortParity.fromValue(get(lib.sp_get_config_parity));
+        final stopBits = get(lib.sp_get_config_stopbits);
+        final rts = SerialPortRts.fromValue(get(lib.sp_get_config_rts));
+        final cts = SerialPortCts.fromValue(get(lib.sp_get_config_cts));
+        final dtr = SerialPortDtr.fromValue(get(lib.sp_get_config_dtr));
+        final dsr = SerialPortDsr.fromValue(get(lib.sp_get_config_dsr));
+        final flow =
+            SerialPortXonXoff.fromValue(get(lib.sp_get_config_xon_xoff));
 
-    lib.sp_free_config(ptr.value);
+        lib.sp_free_config(ptr.value);
 
-    return SerialPortConfig(
-      baudRate: baudRate,
-      bits: bits,
-      parity: parity,
-      stopBits: stopBits,
-      rts: rts,
-      cts: cts,
-      dtr: dtr,
-      dsr: dsr,
-      xonXoff: flow,
-    );
-  });
+        return SerialPortConfig(
+          baudRate: baudRate,
+          bits: bits,
+          parity: parity,
+          stopBits: stopBits,
+          rts: rts,
+          cts: cts,
+          dtr: dtr,
+          dsr: dsr,
+          xonXoff: flow,
+        );
+      });
 
   void setConfig(SerialPortConfig value) {
     set<T>(sp_return Function(Pointer<sp_port>, T value) func, T? value) {
@@ -162,6 +165,9 @@ class SerialPort {
   }
 
   //#endregion
+
+  @override
+  List<Object?> get props => [_port];
 }
 
 enum SerialPortMode {

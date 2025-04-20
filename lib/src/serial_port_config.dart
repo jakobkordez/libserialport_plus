@@ -25,17 +25,8 @@ class SerialPortConfig extends Equatable {
   });
 
   @override
-  List<Object?> get props => [
-    baudRate,
-    bits,
-    parity,
-    stopBits,
-    rts,
-    cts,
-    dtr,
-    dsr,
-    xonXoff,
-  ];
+  List<Object?> get props =>
+      [baudRate, bits, parity, stopBits, rts, cts, dtr, dsr, xonXoff];
 }
 
 enum SerialPortParity {
@@ -61,9 +52,9 @@ enum SerialPortParity {
   const SerialPortParity(this.value);
 
   static SerialPortParity fromValue(int value) => values.firstWhere(
-    (e) => e.value == value,
-    orElse: () => throw ArgumentError("Unknown value for parity: $value"),
-  );
+        (e) => e.value == value,
+        orElse: () => throw ArgumentError("Unknown value for parity: $value"),
+      );
 
   sp_parity get native => sp_parity.fromValue(value);
 }
@@ -85,9 +76,9 @@ enum SerialPortRts {
   const SerialPortRts(this.value);
 
   static SerialPortRts fromValue(int value) => values.firstWhere(
-    (e) => e.value == value,
-    orElse: () => throw ArgumentError("Unknown value for rts: $value"),
-  );
+        (e) => e.value == value,
+        orElse: () => throw ArgumentError("Unknown value for rts: $value"),
+      );
 
   sp_rts get native => sp_rts.fromValue(value);
 }
@@ -106,9 +97,9 @@ enum SerialPortCts {
   const SerialPortCts(this.value);
 
   static SerialPortCts fromValue(int value) => values.firstWhere(
-    (e) => e.value == value,
-    orElse: () => throw ArgumentError("Unknown value for cts: $value"),
-  );
+        (e) => e.value == value,
+        orElse: () => throw ArgumentError("Unknown value for cts: $value"),
+      );
 
   sp_cts get native => sp_cts.fromValue(value);
 }
@@ -130,9 +121,9 @@ enum SerialPortDtr {
   const SerialPortDtr(this.value);
 
   static SerialPortDtr fromValue(int value) => values.firstWhere(
-    (e) => e.value == value,
-    orElse: () => throw ArgumentError("Unknown value for dtr: $value"),
-  );
+        (e) => e.value == value,
+        orElse: () => throw ArgumentError("Unknown value for dtr: $value"),
+      );
 
   sp_dtr get native => sp_dtr.fromValue(value);
 }
@@ -151,9 +142,9 @@ enum SerialPortDsr {
   const SerialPortDsr(this.value);
 
   static SerialPortDsr fromValue(int value) => values.firstWhere(
-    (e) => e.value == value,
-    orElse: () => throw ArgumentError("Unknown value for dsr: $value"),
-  );
+        (e) => e.value == value,
+        orElse: () => throw ArgumentError("Unknown value for dsr: $value"),
+      );
 
   sp_dsr get native => sp_dsr.fromValue(value);
 }
@@ -178,9 +169,9 @@ enum SerialPortXonXoff {
   const SerialPortXonXoff(this.value);
 
   static SerialPortXonXoff fromValue(int value) => values.firstWhere(
-    (e) => e.value == value,
-    orElse: () => throw ArgumentError("Unknown value for xonXoff: $value"),
-  );
+        (e) => e.value == value,
+        orElse: () => throw ArgumentError("Unknown value for xonXoff: $value"),
+      );
 
   sp_xonxoff get native => sp_xonxoff.fromValue(value);
 }
@@ -202,9 +193,10 @@ enum SerialPortFlowControl {
   const SerialPortFlowControl(this.value);
 
   static SerialPortFlowControl fromValue(int value) => values.firstWhere(
-    (e) => e.value == value,
-    orElse: () => throw ArgumentError("Unknown value for flowControl: $value"),
-  );
+        (e) => e.value == value,
+        orElse: () =>
+            throw ArgumentError("Unknown value for flowControl: $value"),
+      );
 
   sp_flowcontrol get native => sp_flowcontrol.fromValue(value);
 }
