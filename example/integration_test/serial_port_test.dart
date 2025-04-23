@@ -8,9 +8,10 @@ const String secondPort = 'CNCB0';
 
 void main() {
   test('Get port list', () {
-    final ports = SerialPort.listPorts();
+    final ports = SerialPort.getAvailablePorts();
 
     expect(ports, isNotEmpty);
+    expect(ports, everyElement(isNotEmpty));
   });
 
   test('Create port', () {
@@ -24,7 +25,7 @@ void main() {
 
     expect(port.isOpen(), isFalse);
 
-    port.openReadWrite();
+    port.open();
 
     expect(port.isOpen(), isTrue);
 
@@ -39,8 +40,8 @@ void main() {
     final port1 = SerialPort(firstPort);
     final port2 = SerialPort(secondPort);
 
-    port1.openReadWrite();
-    port2.openReadWrite();
+    port1.open();
+    port2.open();
 
     final msg = Uint8List.fromList(List.generate(256, (i) => i % 128));
     final written = port1.write(msg);
@@ -60,9 +61,9 @@ void main() {
     final port1 = SerialPort(firstPort);
     final port2 = SerialPort(secondPort);
 
-    port1.openReadWrite();
+    port1.open();
     port1.setConfig(const SerialPortConfig(bits: 8));
-    port2.openReadWrite();
+    port2.open();
     port2.setConfig(const SerialPortConfig(bits: 8));
 
     final msg = Uint8List.fromList(List.generate(512, (i) => i % 256));
@@ -81,7 +82,7 @@ void main() {
 
   test('Get config', () {
     final port = SerialPort(firstPort);
-    port.openReadWrite();
+    port.open();
     final config = port.getConfig();
 
     port.close();
@@ -89,13 +90,13 @@ void main() {
 
     expect(config.baudRate, isNonNegative);
     expect(config.bits, isNonNegative);
-    expect(config.parity, isNot(SerialPortParity.invalid));
+    expect(config.parity, isNotNull);
     expect(config.stopBits, isNonNegative);
-    expect(config.rts, isNot(SerialPortRts.invalid));
-    expect(config.cts, isNot(SerialPortCts.invalid));
-    expect(config.dtr, isNot(SerialPortDtr.invalid));
-    expect(config.dsr, isNot(SerialPortDsr.invalid));
-    expect(config.xonXoff, isNot(SerialPortXonXoff.invalid));
+    expect(config.rts, isNotNull);
+    expect(config.cts, isNotNull);
+    expect(config.dtr, isNotNull);
+    expect(config.dsr, isNotNull);
+    expect(config.xonXoff, isNotNull);
   });
 
   test('Set config', () {
@@ -112,7 +113,7 @@ void main() {
     );
     final port = SerialPort(firstPort);
 
-    port.openReadWrite();
+    port.open();
 
     port.setConfig(config);
     final newConfig = port.getConfig();

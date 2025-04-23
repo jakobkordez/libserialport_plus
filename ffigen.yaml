@@ -17,3 +17,16 @@ preamble: |
 comments:
   style: any
   length: full
+
+functions:
+  rename:
+    "sp_(.*)": "$1"
+enums:
+  member-rename:
+    "(.*)":
+      "SP(_[A-Z]+)?_(.*)": "$2"
+  as-int:
+    include:
+      - sp_return
+
+silence-enum-warning: true

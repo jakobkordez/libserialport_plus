@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:ffi/ffi.dart';
 import 'package:flutter_serial/flutter_serial_bindings_generated.dart';
 
 const String _libName = 'flutter_serial';
@@ -22,9 +23,29 @@ final DynamicLibrary _dylib = () {
 /// The bindings to the native functions in [_dylib].
 final FlutterSerialBindings lib = FlutterSerialBindings(_dylib);
 
-int assertReturn(sp_return value) {
-  if (value.value >= 0) return value.value;
-  throw SerialPortException(value.value, value.name);
+int assertReturn(int value) {
+  if (value >= 0) return value;
+  final ex = getLastError();
+  if (ex != null) throw ex;
+  String message = switch (value) {
+    sp_return.ARG => 'Argument error',
+    sp_return.FAIL => 'Fail',
+    sp_return.MEM => 'Memory error',
+    sp_return.SUPP => 'Unsupported',
+    _ => 'Unknown error',
+  };
+  throw SerialPortException(value, message);
+}
+
+SerialPortException? getLastError() {
+  final code = lib.last_error_code();
+  if (code == 0) return null;
+  final ptr = lib.last_error_message();
+  try {
+    return SerialPortException(code, ptr.cast<Utf8>().toDartString());
+  } finally {
+    lib.free_error_message(ptr);
+  }
 }
 
 class SerialPortException implements Exception {

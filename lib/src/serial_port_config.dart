@@ -1,5 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:flutter_serial/flutter_serial_bindings_generated.dart';
+part of 'serial_port.dart';
 
 class SerialPortConfig extends Equatable {
   final int? baudRate;
@@ -30,173 +29,140 @@ class SerialPortConfig extends Equatable {
 }
 
 enum SerialPortParity {
-  /// Special value to indicate setting should be left alone.
-  invalid(-1),
-
   /// No parity.
-  none(0),
+  none(sp_parity.NONE),
 
   /// Odd parity.
-  odd(1),
+  odd(sp_parity.ODD),
 
   /// Even parity.
-  even(2),
+  even(sp_parity.EVEN),
 
   /// Mark parity.
-  mark(3),
+  mark(sp_parity.MARK),
 
   /// Space parity.
-  space(4);
+  space(sp_parity.SPACE);
 
-  final int value;
-  const SerialPortParity(this.value);
+  final sp_parity _native;
+  int get value => _native.value;
+  const SerialPortParity(this._native);
 
-  static SerialPortParity fromValue(int value) => values.firstWhere(
-        (e) => e.value == value,
-        orElse: () => throw ArgumentError("Unknown value for parity: $value"),
-      );
-
-  sp_parity get native => sp_parity.fromValue(value);
+  static SerialPortParity? fromValue(int value) =>
+      values.where((e) => e.value == value).firstOrNull;
 }
 
 enum SerialPortRts {
-  /// Special value to indicate setting should be left alone.
-  invalid(-1),
-
   /// RTS off.
-  off(0),
+  off(sp_rts.OFF),
 
   /// RTS on.
-  on(1),
+  on(sp_rts.ON),
 
   /// RTS used for flow control.
-  flowControl(2);
+  flowControl(sp_rts.FLOW_CONTROL);
 
-  final int value;
-  const SerialPortRts(this.value);
+  final sp_rts _native;
+  int get value => _native.value;
+  const SerialPortRts(this._native);
 
-  static SerialPortRts fromValue(int value) => values.firstWhere(
-        (e) => e.value == value,
-        orElse: () => throw ArgumentError("Unknown value for rts: $value"),
-      );
-
-  sp_rts get native => sp_rts.fromValue(value);
+  static SerialPortRts? fromValue(int value) =>
+      values.where((e) => e.value == value).firstOrNull;
 }
 
 enum SerialPortCts {
-  /// Special value to indicate setting should be left alone.
-  invalid(-1),
-
   /// CTS ignored.
-  ignore(0),
+  ignore(sp_cts.IGNORE),
 
   /// CTS used for flow control.
-  flowControl(1);
+  flowControl(sp_cts.FLOW_CONTROL);
 
-  final int value;
-  const SerialPortCts(this.value);
+  final sp_cts _native;
+  int get value => _native.value;
+  const SerialPortCts(this._native);
 
-  static SerialPortCts fromValue(int value) => values.firstWhere(
-        (e) => e.value == value,
-        orElse: () => throw ArgumentError("Unknown value for cts: $value"),
-      );
-
-  sp_cts get native => sp_cts.fromValue(value);
+  static SerialPortCts? fromValue(int value) =>
+      values.where((e) => e.value == value).firstOrNull;
 }
 
 enum SerialPortDtr {
-  /// Special value to indicate setting should be left alone.
-  invalid(-1),
-
   /// DTR off.
-  off(0),
+  off(sp_dtr.OFF),
 
   /// DTR on.
-  on(1),
+  on(sp_dtr.ON),
 
   /// DTR used for flow control.
-  flowControl(2);
+  flowControl(sp_dtr.FLOW_CONTROL);
 
-  final int value;
-  const SerialPortDtr(this.value);
+  final sp_dtr _native;
+  int get value => _native.value;
+  const SerialPortDtr(this._native);
 
-  static SerialPortDtr fromValue(int value) => values.firstWhere(
-        (e) => e.value == value,
-        orElse: () => throw ArgumentError("Unknown value for dtr: $value"),
-      );
-
-  sp_dtr get native => sp_dtr.fromValue(value);
+  static SerialPortDtr? fromValue(int value) =>
+      values.where((e) => e.value == value).firstOrNull;
 }
 
 enum SerialPortDsr {
-  /// Special value to indicate setting should be left alone.
-  invalid(-1),
-
   /// DSR ignored.
-  ignore(0),
+  ignore(sp_dsr.IGNORE),
 
   /// DSR used for flow control.
-  flowControl(1);
+  flowControl(sp_dsr.FLOW_CONTROL);
 
-  final int value;
-  const SerialPortDsr(this.value);
+  final sp_dsr _native;
+  int get value => _native.value;
+  const SerialPortDsr(this._native);
 
-  static SerialPortDsr fromValue(int value) => values.firstWhere(
+  static SerialPortDsr? fromValue(int value) => values.firstWhere(
         (e) => e.value == value,
         orElse: () => throw ArgumentError("Unknown value for dsr: $value"),
       );
-
-  sp_dsr get native => sp_dsr.fromValue(value);
 }
 
 enum SerialPortXonXoff {
-  /// Special value to indicate setting should be left alone.
-  invalid(-1),
-
   /// XON/XOFF disabled.
-  disabled(0),
+  disabled(sp_xonxoff.DISABLED),
 
   /// XON/XOFF enabled for input only.
-  input(1),
+  input(sp_xonxoff.IN),
 
   /// XON/XOFF enabled for output only.
-  output(2),
+  output(sp_xonxoff.OUT),
 
   /// XON/XOFF enabled for input and output.
-  inputOutput(3);
+  inputOutput(sp_xonxoff.INOUT);
 
-  final int value;
-  const SerialPortXonXoff(this.value);
+  final sp_xonxoff _native;
+  int get value => _native.value;
+  const SerialPortXonXoff(this._native);
 
-  static SerialPortXonXoff fromValue(int value) => values.firstWhere(
+  static SerialPortXonXoff? fromValue(int value) => values.firstWhere(
         (e) => e.value == value,
         orElse: () => throw ArgumentError("Unknown value for xonXoff: $value"),
       );
-
-  sp_xonxoff get native => sp_xonxoff.fromValue(value);
 }
 
 enum SerialPortFlowControl {
   /// No flow control.
-  none(0),
+  none(sp_flowcontrol.NONE),
 
   /// Software flow control using XON/XOFF characters.
-  xonXoff(1),
+  xonXoff(sp_flowcontrol.XONXOFF),
 
   /// Hardware flow control using RTS/CTS signals.
-  rtsCts(2),
+  rtsCts(sp_flowcontrol.RTSCTS),
 
   /// Hardware flow control using DTR/DSR signals.
-  dtrDsr(3);
+  dtrDsr(sp_flowcontrol.DTRDSR);
 
-  final int value;
-  const SerialPortFlowControl(this.value);
+  final sp_flowcontrol _native;
+  int get value => _native.value;
+  const SerialPortFlowControl(this._native);
 
-  static SerialPortFlowControl fromValue(int value) => values.firstWhere(
+  static SerialPortFlowControl? fromValue(int value) => values.firstWhere(
         (e) => e.value == value,
         orElse: () =>
             throw ArgumentError("Unknown value for flowControl: $value"),
       );
-
-  sp_flowcontrol get native => sp_flowcontrol.fromValue(value);
 }
