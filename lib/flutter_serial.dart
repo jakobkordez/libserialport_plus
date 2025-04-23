@@ -11,4 +11,6 @@ export 'src/serial_port.dart'
         SerialPortDtr,
         SerialPortDsr,
         SerialPortXonXoff,
-        SerialPortFlowControl;
+        SerialPortFlowControl,
+        SerialPortInfo,
+        SerialPortTransport;

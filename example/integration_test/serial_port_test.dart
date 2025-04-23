@@ -20,6 +20,25 @@ void main() {
     port.dispose();
   });
 
+  test('Get port info', () {
+    final port = SerialPort(firstPort);
+    final info = port.getInfo();
+
+    expect(info.name, firstPort);
+    expect(info.description, isNotEmpty);
+    expect(info.transport, SerialPortTransport.native);
+    expect(info.usbBus, isNull);
+    expect(info.usbAddress, isNull);
+    expect(info.usbVid, isNull);
+    expect(info.usbPid, isNull);
+    expect(info.usbManufacturer, isNull);
+    expect(info.usbProduct, isNull);
+    expect(info.usbSerialNumber, isNull);
+    expect(info.bluetoothAddress, isNull);
+
+    port.dispose();
+  });
+
   test('Open and close port', () {
     final port = SerialPort(firstPort);
 

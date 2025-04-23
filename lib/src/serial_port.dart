@@ -10,6 +10,7 @@ import 'package:flutter_serial/src/lib.dart';
 
 part 'serial_port_config.dart';
 part 'serial_port_reader.dart';
+part 'serial_port_info.dart';
 
 class SerialPort extends Equatable {
   final Pointer<sp_port> _port;
@@ -148,6 +149,59 @@ class SerialPort extends Equatable {
     set(lib.set_dtr, value.dtr?._native);
     set(lib.set_dsr, value.dsr?._native);
     set(lib.set_xon_xoff, value.xonXoff?._native);
+  }
+
+  //#endregion
+
+  //#region Port info
+
+  SerialPortInfo getInfo() {
+    getS(Pointer<Char> Function(Pointer<sp_port>) func) {
+      final ptr = func(_port);
+      return ptr.cast<Utf8>().toDartString();
+    }
+
+    getI(int Function(Pointer<sp_port>, Pointer<Int>, Pointer<Int>) func) =>
+        using((arena) {
+          final ptr1 = calloc<Int>();
+          final ptr2 = calloc<Int>();
+          assertReturn(func(_port, ptr1, ptr2));
+          return (ptr1.value, ptr2.value);
+        });
+
+    final name = getS(lib.get_port_name);
+    final description = getS(lib.get_port_description);
+    final transport = SerialPortTransport.fromValue(
+        assertReturn(lib.get_port_transport(_port).value));
+
+    String? manufacturer, product, serial;
+    int? bus, address, vid, pid;
+    if (transport == SerialPortTransport.usb) {
+      (bus, address) = getI(lib.get_port_usb_bus_address);
+      (vid, pid) = getI(lib.get_port_usb_vid_pid);
+      getS(lib.get_port_usb_manufacturer);
+      getS(lib.get_port_usb_product);
+      getS(lib.get_port_usb_serial);
+    }
+
+    String? btAddress;
+    if (transport == SerialPortTransport.bluetooth) {
+      btAddress = getS(lib.get_port_bluetooth_address);
+    }
+
+    return SerialPortInfo(
+      name: name,
+      description: description,
+      transport: transport,
+      usbBus: bus,
+      usbAddress: address,
+      usbVid: vid,
+      usbPid: pid,
+      usbManufacturer: manufacturer,
+      usbProduct: product,
+      usbSerialNumber: serial,
+      bluetoothAddress: btAddress,
+    );
   }
 
   //#endregion
