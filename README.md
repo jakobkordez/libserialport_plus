@@ -1,4 +1,4 @@
-# flutter_serial
+# libserialport_plus
 
 Flutter libserialport FFI plugin
 
@@ -15,8 +15,8 @@ The native build systems that are invoked by FFI (and method channel) plugins ar
 - For Android: Gradle, which invokes the Android NDK for native builds.
   - See the documentation in android/build.gradle.
 - For iOS and MacOS: Xcode, via CocoaPods.
-  - See the documentation in ios/flutter_serial.podspec.
-  - See the documentation in macos/flutter_serial.podspec.
+  - See the documentation in ios/libserialport_plus.podspec.
+  - See the documentation in macos/libserialport_plus.podspec.
 - For Linux and Windows: CMake.
   - See the documentation in linux/CMakeLists.txt.
   - See the documentation in windows/CMakeLists.txt.
@@ -25,5 +25,5 @@ The native build systems that are invoked by FFI (and method channel) plugins ar
 
 To use the native code, bindings in Dart are needed.
 To avoid writing these by hand, they are generated from the header file
-(`src/libserialport/flutter_serial.h`) by `package:ffigen`.
+(`src/libserialport/libserialport.h`) by `package:ffigen`.
 Regenerate the bindings by running `dart run ffigen --config ffigen.yaml`.

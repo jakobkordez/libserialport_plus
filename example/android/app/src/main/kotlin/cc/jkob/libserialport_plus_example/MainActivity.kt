@@ -1,4 +1,4 @@
-package cc.jkob.flutter_serial_example
+package cc.jkob.libserialport_plus_example
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -12,17 +12,17 @@ import 'dart:ffi' as ffi;
 ///
 /// Regenerate bindings with `dart run ffigen --config ffigen.yaml`.
 ///
-class FlutterSerialBindings {
+class LibSerialPortBindings {
   /// Holds the symbol lookup function.
   final ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
       _lookup;
 
   /// The symbols are looked up in [dynamicLibrary].
-  FlutterSerialBindings(ffi.DynamicLibrary dynamicLibrary)
+  LibSerialPortBindings(ffi.DynamicLibrary dynamicLibrary)
       : _lookup = dynamicLibrary.lookup;
 
   /// The symbols are looked up with [lookup].
-  FlutterSerialBindings.fromLookup(
+  LibSerialPortBindings.fromLookup(
       ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
           lookup)
       : _lookup = lookup;

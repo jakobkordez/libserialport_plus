@@ -2,7 +2,8 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
-import 'package:flutter_serial/flutter_serial_bindings_generated.dart';
+
+import 'libserialport_bindings.g.dart';
 
 const String _libName = 'flutter_serial';
 
@@ -21,7 +22,7 @@ final DynamicLibrary _dylib = () {
 }();
 
 /// The bindings to the native functions in [_dylib].
-final FlutterSerialBindings lib = FlutterSerialBindings(_dylib);
+final LibSerialPortBindings lib = LibSerialPortBindings(_dylib);
 
 int assertReturn(int value) {
   if (value >= 0) return value;

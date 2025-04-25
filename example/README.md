@@ -1,6 +1,6 @@
-# flutter_serial_example
+# libserialport_plus_example
 
-Demonstrates how to use the flutter_serial plugin.
+Demonstrates how to use the libserialport_plus plugin.
 
 ## Getting Started
 

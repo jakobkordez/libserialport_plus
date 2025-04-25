@@ -1,6 +1,6 @@
 // The Android Gradle Plugin builds the native code with the Android NDK.
 
-group = "cc.jkob.flutter_serial"
+group = "cc.jkob.libserialport_plus"
 version = "1.0"
 
 buildscript {
@@ -25,7 +25,7 @@ rootProject.allprojects {
 apply plugin: "com.android.library"
 
 android {
-    namespace = "cc.jkob.flutter_serial"
+    namespace = "cc.jkob.libserialport_plus"
 
     // Bumping the plugin compileSdk version requires all clients of this plugin
     // to bump the version in their app.

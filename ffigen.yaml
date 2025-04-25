@@ -1,10 +1,10 @@
 # Run with `dart run ffigen --config ffigen.yaml`.
-name: FlutterSerialBindings
+name: LibSerialPortBindings
 description: |
   Bindings for `src/libserialport/libserialport.h`.
 
   Regenerate bindings with `dart run ffigen --config ffigen.yaml`.
-output: "lib/flutter_serial_bindings_generated.dart"
+output: "lib/src/libserialport_bindings.g.dart"
 headers:
   entry-points:
     - "src/libserialport/libserialport.h"

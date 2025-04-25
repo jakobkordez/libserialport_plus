@@ -5,8 +5,9 @@ import 'dart:typed_data';
 
 import 'package:equatable/equatable.dart';
 import 'package:ffi/ffi.dart';
-import 'package:flutter_serial/flutter_serial_bindings_generated.dart';
-import 'package:flutter_serial/src/lib.dart';
+
+import 'lib.dart';
+import 'libserialport_bindings.g.dart';
 
 part 'serial_port_config.dart';
 part 'serial_port_reader.dart';
