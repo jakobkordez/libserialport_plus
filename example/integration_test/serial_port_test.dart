@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_serial/flutter_serial.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:libserialport_plus/libserialport_plus.dart';
 
 // Set these to the names of your null-modem serial ports.
 const String firstPort = 'CNCA0';
