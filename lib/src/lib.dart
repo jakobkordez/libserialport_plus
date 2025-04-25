@@ -5,7 +5,7 @@ import 'package:ffi/ffi.dart';
 
 import 'libserialport_bindings.g.dart';
 
-const String _libName = 'flutter_serial';
+const String _libName = 'libserialport_plus';
 
 /// The dynamic library in which the symbols for [FlutterSerialBindings] can be found.
 final DynamicLibrary _dylib = () {
