@@ -1,7 +1,8 @@
 name: libserialport_plus
 description: "Flutter libserialport FFI plugin"
 version: 0.0.1
-homepage:
+homepage: https://github.com/jakobkordez/libserialport_plus
+repository: https://github.com/jakobkordez/libserialport_plus
 
 environment:
   sdk: ^3.0.0
