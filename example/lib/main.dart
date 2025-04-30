@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
+
+import 'package:libserialport_plus/libserialport_plus.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,54 +14,47 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late int sumResult;
-  late Future<int> sumAsyncResult;
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  List<SerialPortInfo>? infos;
 
   @override
   Widget build(BuildContext context) {
-    const textStyle = TextStyle(fontSize: 25);
     const spacerSmall = SizedBox(height: 10);
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(title: const Text('Native Packages')),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              children: [
-                const Text(
-                  'This calls a native function through FFI that is shipped as source in the package. '
-                  'The native code is built as part of the Flutter Runner build.',
-                  style: textStyle,
-                  textAlign: TextAlign.center,
-                ),
-                spacerSmall,
-                Text(
-                  'sum(1, 2) = $sumResult',
-                  style: textStyle,
-                  textAlign: TextAlign.center,
-                ),
-                spacerSmall,
-                FutureBuilder<int>(
-                  future: sumAsyncResult,
-                  builder: (BuildContext context, AsyncSnapshot<int> value) {
-                    final displayValue =
-                        (value.hasData) ? value.data : 'loading';
-                    return Text(
-                      'await sumAsync(3, 4) = $displayValue',
-                      style: textStyle,
-                      textAlign: TextAlign.center,
-                    );
-                  },
-                ),
-              ],
+        body: ListView(
+          padding: const EdgeInsets.all(10),
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    final ports = SerialPort.getAvailablePorts();
+                    infos = ports.map((p) {
+                      final port = SerialPort(p);
+                      final info = port.getInfo();
+                      port.dispose();
+                      return info;
+                    }).toList();
+                  });
+                },
+                child: infos == null
+                    ? const Text('Fetch available ports')
+                    : const Text('Refresh available ports'),
+              ),
             ),
-          ),
+            spacerSmall,
+            if (infos?.isEmpty ?? false)
+              const Text('No ports available', style: TextStyle(fontSize: 18))
+            else if (infos?.isNotEmpty ?? false) ...[
+              const Text('Available ports:', style: TextStyle(fontSize: 18)),
+              for (final info in infos!) ...[
+                spacerSmall,
+                Text(info.toString()),
+              ],
+            ],
+          ],
         ),
       ),
     );
