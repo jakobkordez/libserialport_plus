@@ -1,3 +1,7 @@
+## 0.0.4
+
+- Fix error handling
+
 ## 0.0.3
 
 - Remove iOS support

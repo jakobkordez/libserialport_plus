@@ -166,7 +166,9 @@ class SerialPort extends Equatable {
         using((arena) {
           final ptr1 = calloc<Int>();
           final ptr2 = calloc<Int>();
-          assertReturn(func(_port, ptr1, ptr2));
+          final ret = func(_port, ptr1, ptr2);
+          if (ret == sp_return.SUPP) return (null, null);
+          assertReturn(ret);
           return (ptr1.value, ptr2.value);
         });
 

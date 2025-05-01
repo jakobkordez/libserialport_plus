@@ -26,8 +26,10 @@ final LibSerialPortBindings lib = LibSerialPortBindings(_dylib);
 
 int assertReturn(int value) {
   if (value >= 0) return value;
-  final ex = getLastError();
-  if (ex != null) throw ex;
+  if (value == sp_return.FAIL) {
+    final ex = getLastError();
+    if (ex != null) throw ex;
+  }
   String message = switch (value) {
     sp_return.ARG => 'Argument error',
     sp_return.FAIL => 'Fail',
