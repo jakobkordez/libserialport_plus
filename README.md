@@ -62,6 +62,15 @@ reader.stream.listen((Uint8List bytes) {
 reader.close();
 ```
 
+## macOS
+
+If creating an app for macOS, serial permissions are required. Enable this by adding the following two lines to `DebugProfile.entitlements` and `Release.entitlements`:
+
+```xml
+<key>com.apple.security.device.serial</key>
+<true/>
+```
+
 ## Development
 
 To get started you need to initialize the `libserialport` submodule with:

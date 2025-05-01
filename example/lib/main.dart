@@ -14,14 +14,16 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  List<SerialPortInfo>? infos;
+  List<String>? ports;
+  List<String>? infos;
+  List<SerialPortConfig?>? configs;
 
   @override
   Widget build(BuildContext context) {
     const spacerSmall = SizedBox(height: 10);
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: const Text('Native Packages')),
+        appBar: AppBar(title: const Text('libserialport_plus')),
         body: ListView(
           padding: const EdgeInsets.all(10),
           children: [
@@ -30,28 +32,54 @@ class _MyAppState extends State<MyApp> {
               child: ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    final ports = SerialPort.getAvailablePorts();
-                    infos = ports.map((p) {
-                      final port = SerialPort(p);
-                      final info = port.getInfo();
-                      port.dispose();
-                      return info;
+                    ports = SerialPort.getAvailablePorts();
+                    configs = List.generate(ports!.length, (_) => null);
+                    infos = ports!.map((p) {
+                      try {
+                        final port = SerialPort(p);
+                        final info = port.getInfo();
+                        port.dispose();
+                        return info.toString();
+                      } on SerialPortException catch (e, s) {
+                        debugPrint(s.toString());
+                        return '$p: $e';
+                      }
                     }).toList();
                   });
                 },
-                child: infos == null
+                child: ports == null
                     ? const Text('Fetch available ports')
                     : const Text('Refresh available ports'),
               ),
             ),
             spacerSmall,
-            if (infos?.isEmpty ?? false)
+            if (ports?.isEmpty ?? false)
               const Text('No ports available', style: TextStyle(fontSize: 18))
-            else if (infos?.isNotEmpty ?? false) ...[
+            else if (ports?.isNotEmpty ?? false) ...[
               const Text('Available ports:', style: TextStyle(fontSize: 18)),
-              for (final info in infos!) ...[
+              for (int i = 0; i < infos!.length; ++i) ...[
                 spacerSmall,
-                Text(info.toString()),
+                if (i != 0) Divider(),
+                spacerSmall,
+                Text(infos![i].toString()),
+                if (configs![i] != null)
+                  Text(configs![i].toString())
+                else
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        final port = SerialPort(ports![i]);
+                        port.open();
+                        setState(() {
+                          configs![i] = port.getConfig();
+                        });
+                        port.close();
+                        port.dispose();
+                      },
+                      child: const Text('Get config'),
+                    ),
+                  ),
               ],
             ],
           ],
