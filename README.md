@@ -2,7 +2,67 @@
 
 Flutter libserialport FFI plugin
 
-## Getting Started
+## Usage
+
+Add `libserialport_plus` as a dependency in your `pubspec.yaml` file.
+
+```bash
+flutter pub add libserialport_plus
+```
+
+Import the package in your Dart code:
+
+```dart
+import 'package:libserialport_plus/libserialport_plus.dart';
+```
+
+```dart
+// Get a list of available serial ports
+List<String> ports = SerialPort.getAvailablePorts();
+
+// Create a serial port instance (MUST BE DISPOSED AFTER USE)
+SerialPort port = SerialPort("COM3");
+
+// Get information about the serial port
+SerialPortInfo info = port.getInfo();
+
+// Open the serial port
+port.open(SerialPortMode.readWrite);
+
+// Check if the serial port is open
+bool isOpen = port.isOpen();
+
+// Read bytes from the serial port
+Uint8List bytes = port.read(1024);
+
+// Write some bytes to the serial port
+port.write(bytes);
+
+// Close the serial port
+port.close();
+
+// Dispose the serial port
+port.dispose();
+```
+
+### Reader
+
+```dart
+// Create and open a serial port
+SerialPort port = SerialPort("COM3");
+port.open();
+
+SerialPortReader reader = SerialPortReader(port);
+
+reader.stream.listen((Uint8List bytes) {
+  // Do something with the bytes
+});
+
+// After you are done, close the reader
+reader.close();
+```
+
+## Development
 
 To get started you need to initialize the `libserialport` submodule with:
 
