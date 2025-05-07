@@ -1,6 +1,17 @@
 # libserialport_plus
 
-Flutter libserialport FFI plugin
+A Flutter wrapper (FFI plugin) for the [libserialport](https://github.com/sigrok/libserialport) library.
+
+This package provides a simple API for communicating over serial ports.
+
+## Features
+
+- Cross-platform support for Android, iOS, Linux, macOS and Windows.
+- Reading and writing bytes to serial ports.
+- Reading bytes from serial ports in a stream.
+- Getting a list of available serial ports.
+- Getting information about serial ports.
+- Getting and setting serial port settings (baud rate, data bits, parity, stop bits, etc.).
 
 ## Usage
 
@@ -14,9 +25,7 @@ Import the package in your Dart code:
 
 ```dart
 import 'package:libserialport_plus/libserialport_plus.dart';
-```
 
-```dart
 // Get a list of available serial ports
 List<String> ports = SerialPort.getAvailablePorts();
 
