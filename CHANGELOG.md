@@ -1,3 +1,7 @@
+## 0.0.5
+
+- Remove unused dependencies
+
 ## 0.0.4
 
 - Fix error handling
