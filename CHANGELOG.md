@@ -1,3 +1,7 @@
+## 0.0.6
+
+- Update pubspec.yaml description
+
 ## 0.0.5
 
 - Remove unused dependencies

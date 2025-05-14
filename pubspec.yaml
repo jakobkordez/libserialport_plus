@@ -1,6 +1,6 @@
 name: libserialport_plus
-description: "Flutter libserialport FFI plugin"
-version: 0.0.5
+description: "A Flutter wrapper (FFI plugin) for the libserialport library. This package provides a simple API for communicating over serial ports."
+version: 0.0.6
 homepage: https://github.com/jakobkordez/libserialport_plus
 repository: https://github.com/jakobkordez/libserialport_plus
 
