@@ -1,3 +1,7 @@
+## 0.0.7
+
+- Fix Android build
+
 ## 0.0.6
 
 - Update pubspec.yaml description
