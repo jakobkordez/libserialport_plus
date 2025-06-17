@@ -159,6 +159,7 @@ class SerialPort extends Equatable {
   SerialPortInfo getInfo() {
     getS(Pointer<Char> Function(Pointer<sp_port>) func) {
       final ptr = func(_port);
+      if (ptr == nullptr) return '';
       return ptr.cast<Utf8>().toDartString();
     }
 
@@ -221,8 +222,10 @@ class SerialPort extends Equatable {
       int count = 0;
       while (out.value[count] != nullptr) {
         final portPtr = lib.get_port_name(out.value[count]);
-        final portName = portPtr.cast<Utf8>().toDartString();
-        ports.add(portName);
+        if (portPtr != nullptr) {
+          final portName = portPtr.cast<Utf8>().toDartString();
+          ports.add(portName);
+        }
         count++;
       }
 

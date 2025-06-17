@@ -45,7 +45,10 @@ SerialPortException? getLastError() {
   if (code == 0) return null;
   final ptr = lib.last_error_message();
   try {
-    return SerialPortException(code, ptr.cast<Utf8>().toDartString());
+    return SerialPortException(
+      code,
+      ptr != nullptr ? ptr.cast<Utf8>().toDartString() : '',
+    );
   } finally {
     lib.free_error_message(ptr);
   }
