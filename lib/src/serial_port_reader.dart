@@ -11,6 +11,7 @@ class SerialPortReader {
     _receivePort.listen((message) {
       if (message is SendPort) _sendPort.complete(message);
       if (message is Uint8List) _controller.add(message);
+      if (message is SerialPortException) _controller.addError(message);
     });
 
     final closePort = ReceivePort();
@@ -52,13 +53,15 @@ class SerialPortReader {
     // Main loop
     while (running) {
       try {
-        final len =
-            assertReturn(lib.nonblocking_read(port, buffer.cast(), bufferSize));
+        final len = assertReturn(
+            lib.blocking_read(port, buffer.cast(), bufferSize, 100));
         if (len > 0) {
           final bytes = buffer.asTypedList(len);
           params.sendPort.send(bytes);
         }
       } catch (e) {
+        final error = getLastError();
+        if (error != null) params.sendPort.send(error);
         break;
       }
       await Future.delayed(const Duration(milliseconds: 5));

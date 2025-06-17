@@ -1,3 +1,7 @@
+## 0.0.8
+
+- Change `SerialPortReader` behavior to auto-close on disconnect or when error occurs
+
 ## 0.0.7
 
 - Fix Android build
