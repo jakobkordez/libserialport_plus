@@ -1,3 +1,11 @@
+## 0.0.11
+
+- Update CHANGELOG.md
+
+## 0.0.10
+
+- Change `close()` method in `SerialPortReader` to `Future<void>`
+
 ## 0.0.9
 
 - Fix `nullptr` exceptions
