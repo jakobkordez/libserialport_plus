@@ -27,8 +27,9 @@ class SerialPortReader {
     );
   }
 
-  void close() {
+  Future<void> close() async {
     _sendPort.future.then((sendPort) => sendPort?.send(_StopSignal()));
+    await _controller.done;
   }
 
   void _dispose() {
