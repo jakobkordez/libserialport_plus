@@ -18,14 +18,12 @@ class SerialPort extends Equatable {
 
   const SerialPort._(this._port);
 
-  factory SerialPort(String portName, {SerialPortConfig? config}) {
+  factory SerialPort(String portName) {
     final out = calloc<Pointer<sp_port>>();
     final cStr = portName.toNativeUtf8().cast<Char>();
     try {
       assertReturn(lib.get_port_by_name(cStr, out));
-      final port = SerialPort._(out.value);
-      if (config != null) port.setConfig(config);
-      return port;
+      return SerialPort._(out.value);
     } finally {
       calloc.free(out);
       calloc.free(cStr);

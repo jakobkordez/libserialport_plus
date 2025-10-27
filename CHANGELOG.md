@@ -1,3 +1,7 @@
+## 0.0.12
+
+- Remove invalid config argument from `SerialPort` constructor
+
 ## 0.0.11
 
 - Update CHANGELOG.md
