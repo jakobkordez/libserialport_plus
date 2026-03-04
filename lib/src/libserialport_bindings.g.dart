@@ -205,11 +205,11 @@ class LibSerialPortBindings {
     );
   }
 
-  late final _closePtr =
+  late final closePtr =
       _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<sp_port>)>>(
           'sp_close');
   late final _close =
-      _closePtr.asFunction<int Function(ffi.Pointer<sp_port>)>();
+      closePtr.asFunction<int Function(ffi.Pointer<sp_port>)>();
 
   /// Get the name of a port.
   ///
