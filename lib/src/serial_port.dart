@@ -13,7 +13,9 @@ part 'serial_port_config.dart';
 part 'serial_port_reader.dart';
 part 'serial_port_info.dart';
 
-class SerialPort extends Equatable {
+class SerialPort extends Equatable implements Finalizable {
+  static final _finalizer = NativeFinalizer(lib.closePtr.cast());
+
   final Pointer<sp_port> _port;
 
   const SerialPort._(this._port);
@@ -42,11 +44,16 @@ class SerialPort extends Equatable {
   /// - [SerialPortMode.readWrite]
   ///
   /// If [mode] is not specified, defaults to [SerialPortMode.readWrite].
-  void open([SerialPortMode mode = SerialPortMode.readWrite]) =>
-      assertReturn(lib.open(_port, mode._value));
+  void open([SerialPortMode mode = SerialPortMode.readWrite]) {
+    assertReturn(lib.open(_port, mode._value));
+    _finalizer.attach(this, _port.cast(), detach: this);
+  }
 
   /// Closes an open serial port.
-  void close() => assertReturn(lib.close(_port));
+  void close() {
+    _finalizer.detach(this);
+    assertReturn(lib.close(_port));
+  }
 
   /// Returns true if the serial port is open.
   bool isOpen() => using((arena) {
