@@ -1,3 +1,7 @@
+## 0.1.0
+
+- Add automatic port closing with `NativeFinalizer`
+
 ## 0.0.12
 
 - Remove invalid config argument from `SerialPort` constructor
