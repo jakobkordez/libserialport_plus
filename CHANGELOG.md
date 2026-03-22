@@ -1,3 +1,7 @@
+## 0.1.1
+
+- Change package license to MIT
+
 ## 0.1.0
 
 - Add automatic port closing with `NativeFinalizer`
