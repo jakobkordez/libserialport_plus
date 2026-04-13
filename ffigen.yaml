@@ -21,6 +21,9 @@ comments:
 functions:
   rename:
     "sp_(.*)": "$1"
+  symbol-address:
+    include:
+      - sp_close
 enums:
   member-rename:
     "(.*)":

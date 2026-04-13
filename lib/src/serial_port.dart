@@ -14,7 +14,7 @@ part 'serial_port_reader.dart';
 part 'serial_port_info.dart';
 
 class SerialPort extends Equatable implements Finalizable {
-  static final _finalizer = NativeFinalizer(lib.closePtr.cast());
+  static final _finalizer = NativeFinalizer(lib.addresses.close.cast());
 
   final Pointer<sp_port> _port;
 

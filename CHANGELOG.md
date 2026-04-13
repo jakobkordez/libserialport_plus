@@ -1,3 +1,7 @@
+## 0.1.2
+
+- Update ffigen configuration
+
 ## 0.1.1
 
 - Change package license to MIT
