@@ -33,18 +33,18 @@ class SerialPortInfo extends Equatable {
 
   @override
   List<Object?> get props => [
-        name,
-        description,
-        transport,
-        usbBus,
-        usbAddress,
-        usbVid,
-        usbPid,
-        usbManufacturer,
-        usbProduct,
-        usbSerialNumber,
-        bluetoothAddress,
-      ];
+    name,
+    description,
+    transport,
+    usbBus,
+    usbAddress,
+    usbVid,
+    usbPid,
+    usbManufacturer,
+    usbProduct,
+    usbSerialNumber,
+    bluetoothAddress,
+  ];
 
   @override
   String toString() {
@@ -65,18 +65,4 @@ class SerialPortInfo extends Equatable {
   }
 }
 
-enum SerialPortTransport {
-  native(sp_transport.NATIVE),
-  usb(sp_transport.USB),
-  bluetooth(sp_transport.BLUETOOTH);
-
-  final sp_transport _native;
-  int get value => _native.value;
-  const SerialPortTransport(this._native);
-
-  static SerialPortTransport fromValue(int value) => values.firstWhere(
-        (e) => e.value == value,
-        orElse: () =>
-            throw ArgumentError("Unknown value for transport: $value"),
-      );
-}
+typedef SerialPortTransport = sp.Transport;

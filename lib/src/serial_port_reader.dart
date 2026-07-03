@@ -40,7 +40,7 @@ class SerialPortReader {
   static Future<void> _startRemoteIsolate(_IsolateParams params) async {
     // Setup
     final bufferSize = params.bufferSize;
-    final port = Pointer<sp_port>.fromAddress(params.portAddress);
+    final port = Pointer<sp.Port>.fromAddress(params.portAddress);
     final buffer = calloc<Uint8>(bufferSize);
 
     // Stop signal setup
@@ -55,7 +55,8 @@ class SerialPortReader {
     while (running) {
       try {
         final len = assertReturn(
-            lib.blocking_read(port, buffer.cast(), bufferSize, 100));
+          sp.blockingRead(port, buffer.cast(), bufferSize, 100),
+        );
         if (len > 0) {
           final bytes = buffer.asTypedList(len);
           params.sendPort.send(bytes);

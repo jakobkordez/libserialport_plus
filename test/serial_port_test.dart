@@ -1,5 +1,6 @@
-import 'package:flutter/services.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'dart:typed_data';
+
+import 'package:test/test.dart';
 import 'package:libserialport_plus/libserialport_plus.dart';
 
 // Set these to the names of your null-modem serial ports.

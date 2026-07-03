@@ -1,3 +1,13 @@
+## 1.0.0
+
+- **Breaking:** Update minimum Dart SDK version to 3.10.0
+- **Breaking:** Convert from a Flutter FFI plugin to a Dart FFI package using Native Assets build hooks
+- **Breaking:** Remove the Flutter plugin platform scaffolding and `flutter` SDK dependency
+- **Breaking:** Replace package-defined serial config and transport enum wrappers with generated binding enum types
+- Add a Dart build hook for compiling bundled `libserialport` sources on Android, Linux, macOS, and Windows
+- Move `ffigen` configuration into `tool/ffigen.dart` and regenerate bindings for code assets
+- Move integration tests from the example app into the package `test/` directory
+
 ## 0.1.2
 
 - Update ffigen configuration

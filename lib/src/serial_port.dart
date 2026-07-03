@@ -7,24 +7,24 @@ import 'package:equatable/equatable.dart';
 import 'package:ffi/ffi.dart';
 
 import 'lib.dart';
-import 'libserialport_bindings.g.dart';
+import 'libserialport_bindings.g.dart' as sp;
 
 part 'serial_port_config.dart';
 part 'serial_port_reader.dart';
 part 'serial_port_info.dart';
 
 class SerialPort extends Equatable implements Finalizable {
-  static final _finalizer = NativeFinalizer(lib.addresses.close.cast());
+  static final _finalizer = NativeFinalizer(sp.addresses.close.cast());
 
-  final Pointer<sp_port> _port;
+  final Pointer<sp.Port> _port;
 
   const SerialPort._(this._port);
 
   factory SerialPort(String portName) {
-    final out = calloc<Pointer<sp_port>>();
+    final out = calloc<Pointer<sp.Port>>();
     final cStr = portName.toNativeUtf8().cast<Char>();
     try {
-      assertReturn(lib.get_port_by_name(cStr, out));
+      assertReturn(sp.getPortByName(cStr, out));
       return SerialPort._(out.value);
     } finally {
       calloc.free(out);
@@ -32,7 +32,7 @@ class SerialPort extends Equatable implements Finalizable {
     }
   }
 
-  void dispose() => lib.free_port(_port);
+  void dispose() => sp.freePort(_port);
 
   //#region Opening and closing
 
@@ -45,22 +45,22 @@ class SerialPort extends Equatable implements Finalizable {
   ///
   /// If [mode] is not specified, defaults to [SerialPortMode.readWrite].
   void open([SerialPortMode mode = SerialPortMode.readWrite]) {
-    assertReturn(lib.open(_port, mode._value));
+    assertReturn(sp.open(_port, mode));
     _finalizer.attach(this, _port.cast(), detach: this);
   }
 
   /// Closes an open serial port.
   void close() {
     _finalizer.detach(this);
-    assertReturn(lib.close(_port));
+    assertReturn(sp.close(_port));
   }
 
   /// Returns true if the serial port is open.
   bool isOpen() => using((arena) {
-        final ptr = arena<Int>();
-        assertReturn(lib.get_port_handle(_port, ptr.cast()));
-        return ptr.value > 0;
-      });
+    final ptr = arena<Int>();
+    assertReturn(sp.getPortHandle(_port, ptr.cast()));
+    return ptr.value > 0;
+  });
 
   //#endregion
 
@@ -75,12 +75,12 @@ class SerialPort extends Equatable implements Finalizable {
   ///
   /// Returns the bytes read.
   Uint8List read(int bytes, {int timeout = 0}) => using((arena) {
-        final ptr = arena<Uint8>(bytes);
-        final ret = timeout < 0
-            ? lib.nonblocking_read(_port, ptr.cast(), bytes)
-            : lib.blocking_read(_port, ptr.cast(), bytes, timeout);
-        return Uint8List.fromList(ptr.asTypedList(assertReturn(ret)));
-      });
+    final ptr = arena<Uint8>(bytes);
+    final ret = timeout < 0
+        ? sp.nonblockingRead(_port, ptr.cast(), bytes)
+        : sp.blockingRead(_port, ptr.cast(), bytes, timeout);
+    return Uint8List.fromList(ptr.asTypedList(assertReturn(ret)));
+  });
 
   /// Write bytes to the specified serial port
   ///
@@ -91,70 +91,70 @@ class SerialPort extends Equatable implements Finalizable {
   ///
   /// Returns the number of bytes written.
   int write(Uint8List bytes, {int timeout = 0}) => using((arena) {
-        final len = bytes.length;
-        final ptr = arena<Uint8>(len);
-        ptr.asTypedList(len).setAll(0, bytes);
-        final ret = timeout < 0
-            ? lib.nonblocking_write(_port, ptr.cast(), len)
-            : lib.blocking_write(_port, ptr.cast(), len, timeout);
-        return assertReturn(ret);
-      });
+    final len = bytes.length;
+    final ptr = arena<Uint8>(len);
+    ptr.asTypedList(len).setAll(0, bytes);
+    final ret = timeout < 0
+        ? sp.nonblockingWrite(_port, ptr.cast(), len)
+        : sp.blockingWrite(_port, ptr.cast(), len, timeout);
+    return assertReturn(ret);
+  });
 
   //#endregion
 
   //#region Configuration
 
   SerialPortConfig getConfig() => using((arena) {
-        final ptr = arena<Pointer<sp_port_config>>();
-        assertReturn(lib.new_config(ptr));
-        assertReturn(lib.get_config(_port, ptr.value));
+    final ptr = arena<Pointer<sp.PortConfig>>();
+    assertReturn(sp.newConfig(ptr));
+    assertReturn(sp.getConfig(_port, ptr.value));
 
-        final valPtr = arena<Int>();
-        get(int Function(Pointer<sp_port_config>, Pointer<Int>) func) {
-          assertReturn(func(ptr.value, valPtr));
-          return valPtr.value;
-        }
+    final valPtr = arena<Int>();
+    get(int Function(Pointer<sp.PortConfig>, Pointer<Int>) func) {
+      assertReturn(func(ptr.value, valPtr));
+      return valPtr.value;
+    }
 
-        final baudRate = get(lib.get_config_baudrate);
-        final bits = get(lib.get_config_bits);
-        final parity = SerialPortParity.fromValue(get(lib.get_config_parity));
-        final stopBits = get(lib.get_config_stopbits);
-        final rts = SerialPortRts.fromValue(get(lib.get_config_rts));
-        final cts = SerialPortCts.fromValue(get(lib.get_config_cts));
-        final dtr = SerialPortDtr.fromValue(get(lib.get_config_dtr));
-        final dsr = SerialPortDsr.fromValue(get(lib.get_config_dsr));
-        final flow = SerialPortXonXoff.fromValue(get(lib.get_config_xon_xoff));
+    final baudRate = get(sp.getConfigBaudrate);
+    final bits = get(sp.getConfigBits);
+    final parity = SerialPortParity.fromValue(get(sp.getConfigParity));
+    final stopBits = get(sp.getConfigStopbits);
+    final rts = SerialPortRts.fromValue(get(sp.getConfigRts));
+    final cts = SerialPortCts.fromValue(get(sp.getConfigCts));
+    final dtr = SerialPortDtr.fromValue(get(sp.getConfigDtr));
+    final dsr = SerialPortDsr.fromValue(get(sp.getConfigDsr));
+    final flow = SerialPortXonXoff.fromValue(get(sp.getConfigXonXoff));
 
-        lib.free_config(ptr.value);
+    sp.freeConfig(ptr.value);
 
-        return SerialPortConfig(
-          baudRate: baudRate,
-          bits: bits,
-          parity: parity,
-          stopBits: stopBits,
-          rts: rts,
-          cts: cts,
-          dtr: dtr,
-          dsr: dsr,
-          xonXoff: flow,
-        );
-      });
+    return SerialPortConfig(
+      baudRate: baudRate,
+      bits: bits,
+      parity: parity,
+      stopBits: stopBits,
+      rts: rts,
+      cts: cts,
+      dtr: dtr,
+      dsr: dsr,
+      xonXoff: flow,
+    );
+  });
 
   void setConfig(SerialPortConfig value) {
-    set<T>(int Function(Pointer<sp_port>, T value) func, T? value) {
+    set<T>(int Function(Pointer<sp.Port>, T value) func, T? value) {
       if (value == null) return;
       assertReturn(func(_port, value));
     }
 
-    set(lib.set_baudrate, value.baudRate);
-    set(lib.set_bits, value.bits);
-    set(lib.set_parity, value.parity?._native);
-    set(lib.set_stopbits, value.stopBits);
-    set(lib.set_rts, value.rts?._native);
-    set(lib.set_cts, value.cts?._native);
-    set(lib.set_dtr, value.dtr?._native);
-    set(lib.set_dsr, value.dsr?._native);
-    set(lib.set_xon_xoff, value.xonXoff?._native);
+    set(sp.setBaudrate, value.baudRate);
+    set(sp.setBits, value.bits);
+    set(sp.setParity, value.parity);
+    set(sp.setStopbits, value.stopBits);
+    set(sp.setRts, value.rts);
+    set(sp.setCts, value.cts);
+    set(sp.setDtr, value.dtr);
+    set(sp.setDsr, value.dsr);
+    set(sp.setXonXoff, value.xonXoff);
   }
 
   //#endregion
@@ -162,40 +162,46 @@ class SerialPort extends Equatable implements Finalizable {
   //#region Port info
 
   SerialPortInfo getInfo() {
-    getS(Pointer<Char> Function(Pointer<sp_port>) func) {
+    getS(Pointer<Char> Function(Pointer<sp.Port>) func) {
       final ptr = func(_port);
       if (ptr == nullptr) return '';
       return ptr.cast<Utf8>().toDartString();
     }
 
-    getI(int Function(Pointer<sp_port>, Pointer<Int>, Pointer<Int>) func) =>
+    getI(int Function(Pointer<sp.Port>, Pointer<Int>, Pointer<Int>) func) =>
         using((arena) {
-          final ptr1 = calloc<Int>();
-          final ptr2 = calloc<Int>();
+          final ptr1 = arena<Int>();
+          final ptr2 = arena<Int>();
           final ret = func(_port, ptr1, ptr2);
-          if (ret == sp_return.SUPP) return (null, null);
+          if (ret == sp.Return.ERR_SUPP) return (null, null);
           assertReturn(ret);
           return (ptr1.value, ptr2.value);
         });
 
-    final name = getS(lib.get_port_name);
-    final description = getS(lib.get_port_description);
+    getOptionalS(Pointer<Char> Function(Pointer<sp.Port>) func) {
+      final value = getS(func);
+      return value.isEmpty ? null : value;
+    }
+
+    final name = getS(sp.getPortName);
+    final description = getS(sp.getPortDescription);
     final transport = SerialPortTransport.fromValue(
-        assertReturn(lib.get_port_transport(_port).value));
+      assertReturn(sp.getPortTransport(_port).value),
+    );
 
     String? manufacturer, product, serial;
     int? bus, address, vid, pid;
     if (transport == SerialPortTransport.usb) {
-      (bus, address) = getI(lib.get_port_usb_bus_address);
-      (vid, pid) = getI(lib.get_port_usb_vid_pid);
-      getS(lib.get_port_usb_manufacturer);
-      getS(lib.get_port_usb_product);
-      getS(lib.get_port_usb_serial);
+      (bus, address) = getI(sp.getPortUsbBusAddress);
+      (vid, pid) = getI(sp.getPortUsbVidPid);
+      manufacturer = getOptionalS(sp.getPortUsbManufacturer);
+      product = getOptionalS(sp.getPortUsbProduct);
+      serial = getOptionalS(sp.getPortUsbSerial);
     }
 
     String? btAddress;
     if (transport == SerialPortTransport.bluetooth) {
-      btAddress = getS(lib.get_port_bluetooth_address);
+      btAddress = getS(sp.getPortBluetoothAddress);
     }
 
     return SerialPortInfo(
@@ -218,15 +224,15 @@ class SerialPort extends Equatable implements Finalizable {
   //#region Static methods
 
   static List<String> getAvailablePorts() {
-    final out = calloc<Pointer<Pointer<sp_port>>>();
+    final out = calloc<Pointer<Pointer<sp.Port>>>();
 
     try {
-      assertReturn(lib.list_ports(out));
+      assertReturn(sp.listPorts(out));
 
       final ports = <String>[];
       int count = 0;
       while (out.value[count] != nullptr) {
-        final portPtr = lib.get_port_name(out.value[count]);
+        final portPtr = sp.getPortName(out.value[count]);
         if (portPtr != nullptr) {
           final portName = portPtr.cast<Utf8>().toDartString();
           ports.add(portName);
@@ -236,7 +242,7 @@ class SerialPort extends Equatable implements Finalizable {
 
       return ports;
     } finally {
-      lib.free_port_list(out.value);
+      sp.freePortList(out.value);
       calloc.free(out);
     }
   }
@@ -247,12 +253,4 @@ class SerialPort extends Equatable implements Finalizable {
   List<Object?> get props => [_port];
 }
 
-enum SerialPortMode {
-  read(sp_mode.READ),
-  write(sp_mode.WRITE),
-  readWrite(sp_mode.READ_WRITE);
-
-  final sp_mode _value;
-
-  const SerialPortMode(this._value);
-}
+typedef SerialPortMode = sp.Mode;

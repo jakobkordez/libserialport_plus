@@ -7,7 +7,7 @@ version:
   revision: "ea121f8859e4b13e47a8f845e4586164519588bc"
   channel: "stable"
 
-project_type: plugin_ffi
+project_type: package_ffi
 
 # Tracks metadata for the flutter migrate command
 migration:
@@ -36,3 +36,4 @@ migration:
   # Files that are not part of the templates will be ignored by default.
   unmanaged_files:
     - 'lib/main.dart'
+    - 'ios/Runner.xcodeproj/project.pbxproj'
