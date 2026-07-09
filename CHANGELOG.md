@@ -1,3 +1,7 @@
+## 1.0.1
+
+- Fix build system for unsupported platforms
+
 ## 1.0.0
 
 - **Breaking:** Update minimum Dart SDK version to 3.10.0

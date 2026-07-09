@@ -8,11 +8,12 @@ void main(List<String> args) async {
 
     final packageName = input.packageName;
     final targetOS = input.config.code.targetOS;
-    if (targetOS != OS.windows &&
-        targetOS != OS.linux &&
-        targetOS != OS.android &&
-        targetOS != OS.macOS) {
-      throw BuildError(message: 'Unsupported target OS: $targetOS');
+    const supportedOS = [OS.windows, OS.linux, OS.android, OS.macOS];
+    if (!supportedOS.contains(targetOS)) {
+      // No serial backend exists for this platform. Emit no code asset so
+      // that apps also targeting this platform still build; FFI lookups only
+      // fail at runtime if the library is actually used here.
+      return;
     }
     final isWindows = targetOS == OS.windows;
     final isPosix = !isWindows;

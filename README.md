@@ -6,12 +6,28 @@ This package provides a simple API for communicating over serial ports.
 
 ## Features
 
-- Cross-platform support for Android, iOS, Linux, macOS and Windows.
+- Cross-platform support for Android, Linux, macOS and Windows.
 - Reading and writing bytes to serial ports.
 - Reading bytes from serial ports in a stream.
 - Getting a list of available serial ports.
 - Getting information about serial ports.
 - Getting and setting serial port settings (baud rate, data bits, parity, stop bits, etc.).
+
+## Platform support
+
+| Platform | Supported |
+| -------- | --------- |
+| Windows  | ✅        |
+| Linux    | ✅        |
+| macOS    | ✅        |
+| Android  | ✅        |
+| iOS      | ❌        |
+| Web      | ❌        |
+
+On unsupported platforms the native library is simply not built, so an app that
+targets, for example, both iOS and Windows will still compile for iOS. Serial
+functionality must be guarded by a platform check (e.g. `Platform.isWindows`);
+calling into the library on an unsupported platform fails at runtime.
 
 ## Usage
 
@@ -88,16 +104,11 @@ To get started you need to initialize the `libserialport` submodule with:
 git submodule update --init --recursive
 ```
 
-The native build systems that are invoked by FFI (and method channel) plugins are:
-
-- For Android: Gradle, which invokes the Android NDK for native builds.
-  - See the documentation in android/build.gradle.
-- For iOS and MacOS: Xcode, via CocoaPods.
-  - See the documentation in ios/libserialport_plus.podspec.
-  - See the documentation in macos/libserialport_plus.podspec.
-- For Linux and Windows: CMake.
-  - See the documentation in linux/CMakeLists.txt.
-  - See the documentation in windows/CMakeLists.txt.
+The native code is compiled at build time by the Dart/Flutter code-assets build
+hook in `hook/build.dart`, which uses `package:native_toolchain_c` to build
+`libserialport` for the target platform. Platforms without a serial backend
+(such as iOS and web) are skipped by the hook, so no native asset is produced
+for them and consuming apps still build.
 
 ## Binding to native code
 
