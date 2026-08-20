@@ -1,6 +1,6 @@
 name: libserialport_plus
 description: "A Dart wrapper (FFI package) for the libserialport library. This package provides a simple API for communicating over serial ports."
-version: 1.0.1
+version: 1.0.2
 homepage: https://github.com/jakobkordez/libserialport_plus
 repository: https://github.com/jakobkordez/libserialport_plus
 
@@ -8,7 +8,7 @@ environment:
   sdk: ^3.10.0
 
 dependencies:
-  code_assets: ^1.0.0
+  code_assets: ">=1.0.0 <3.0.0"
   equatable: ^2.0.7
   ffi: ^2.1.3
   hooks: ^2.0.0
