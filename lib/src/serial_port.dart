@@ -9,6 +9,17 @@ import 'package:ffi/ffi.dart';
 import 'lib.dart';
 import 'libserialport_bindings.g.dart' as sp;
 
+import 'libserialport_bindings.g.dart'
+    show
+        SerialPortMode,
+        SerialPortParity,
+        SerialPortRts,
+        SerialPortCts,
+        SerialPortDtr,
+        SerialPortDsr,
+        SerialPortXonXoff,
+        SerialPortTransport;
+
 part 'serial_port_config.dart';
 part 'serial_port_reader.dart';
 part 'serial_port_info.dart';
@@ -252,5 +263,3 @@ class SerialPort extends Equatable implements Finalizable {
   @override
   List<Object?> get props => [_port];
 }
-
-typedef SerialPortMode = sp.Mode;

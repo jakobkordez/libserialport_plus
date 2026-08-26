@@ -26,8 +26,8 @@ void main() {
     structs: Structs(include: _includeDecl, rename: _stripSp(true)),
     enums: Enums(
       include: _includeDecl,
-      rename: _stripSp(true),
-      renameMember: _enumRename,
+      rename: _enumRename,
+      renameMember: _enumMemberRename,
       style: (decl, suggestedStyle) =>
           {'sp_return', 'sp_event', 'sp_signal'}.contains(decl.originalName)
           ? EnumStyle.intConstants
@@ -40,7 +40,14 @@ void main() {
 bool _includeDecl(Declaration decl) =>
     decl.originalName.toLowerCase().startsWith('sp_');
 
-String _enumRename(Declaration decl, String member) {
+String _enumRename(Declaration decl) => switch (decl.originalName) {
+  'sp_return' => 'Return',
+  'sp_xonxoff' => 'SerialPortXonXoff',
+  'sp_flowcontrol' => 'SerialPortFlowControl',
+  _ => 'SerialPort${_stripSp(true)(decl)}',
+};
+
+String _enumMemberRename(Declaration decl, String member) {
   if (decl.originalName == 'sp_return') {
     return member.replaceAll(RegExp(r'^SP_'), '');
   }

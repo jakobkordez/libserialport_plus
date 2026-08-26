@@ -1,3 +1,7 @@
+## 1.0.3
+
+- Code refactor
+
 ## 1.0.2
 
 - Widen the `code_assets` constraint to >=1.0.0 <3.0.0

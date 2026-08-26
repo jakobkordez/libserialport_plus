@@ -52,11 +52,3 @@ class SerialPortConfig extends Equatable {
     return 'SerialPortConfig(${props.join(', ')})';
   }
 }
-
-typedef SerialPortParity = sp.Parity;
-typedef SerialPortRts = sp.Rts;
-typedef SerialPortCts = sp.Cts;
-typedef SerialPortDtr = sp.Dtr;
-typedef SerialPortDsr = sp.Dsr;
-typedef SerialPortXonXoff = sp.Xonxoff;
-typedef SerialPortFlowControl = sp.Flowcontrol;

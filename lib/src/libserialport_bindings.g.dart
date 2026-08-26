@@ -112,7 +112,8 @@ external void freePortList(ffi.Pointer<ffi.Pointer<Port>> ports);
 )
 external int _open(ffi.Pointer<Port> port, int flags);
 
-int open(ffi.Pointer<Port> port, Mode flags) => _open(port, flags.value);
+int open(ffi.Pointer<Port> port, SerialPortMode flags) =>
+    _open(port, flags.value);
 
 /// Close the specified serial port.
 ///
@@ -168,8 +169,8 @@ external ffi.Pointer<ffi.Char> getPortDescription(ffi.Pointer<Port> port);
 )
 external int _getPortTransport(ffi.Pointer<Port> port);
 
-Transport getPortTransport(ffi.Pointer<Port> port) =>
-    Transport.fromValue(_getPortTransport(port));
+SerialPortTransport getPortTransport(ffi.Pointer<Port> port) =>
+    SerialPortTransport.fromValue(_getPortTransport(port));
 
 /// Get the USB bus number and address on bus of a USB serial adapter port.
 ///
@@ -490,7 +491,7 @@ external int setConfigBits(ffi.Pointer<PortConfig> config, int bits);
 )
 external int _setParity(ffi.Pointer<Port> port, int parity);
 
-int setParity(ffi.Pointer<Port> port, Parity parity) =>
+int setParity(ffi.Pointer<Port> port, SerialPortParity parity) =>
     _setParity(port, parity.value);
 
 /// Get the parity setting from a port configuration.
@@ -525,7 +526,7 @@ external int getConfigParity(
 )
 external int _setConfigParity(ffi.Pointer<PortConfig> config, int parity);
 
-int setConfigParity(ffi.Pointer<PortConfig> config, Parity parity) =>
+int setConfigParity(ffi.Pointer<PortConfig> config, SerialPortParity parity) =>
     _setConfigParity(config, parity.value);
 
 /// Set the stop bits for the specified serial port.
@@ -584,7 +585,8 @@ external int setConfigStopbits(ffi.Pointer<PortConfig> config, int stopbits);
 @ffi.Native<ffi.Int Function(ffi.Pointer<Port>, ffi.Int)>(symbol: 'sp_set_rts')
 external int _setRts(ffi.Pointer<Port> port, int rts);
 
-int setRts(ffi.Pointer<Port> port, Rts rts) => _setRts(port, rts.value);
+int setRts(ffi.Pointer<Port> port, SerialPortRts rts) =>
+    _setRts(port, rts.value);
 
 /// Get the RTS pin behaviour from a port configuration.
 ///
@@ -618,7 +620,7 @@ external int getConfigRts(
 )
 external int _setConfigRts(ffi.Pointer<PortConfig> config, int rts);
 
-int setConfigRts(ffi.Pointer<PortConfig> config, Rts rts) =>
+int setConfigRts(ffi.Pointer<PortConfig> config, SerialPortRts rts) =>
     _setConfigRts(config, rts.value);
 
 /// Set the CTS pin behaviour for the specified serial port.
@@ -632,7 +634,8 @@ int setConfigRts(ffi.Pointer<PortConfig> config, Rts rts) =>
 @ffi.Native<ffi.Int Function(ffi.Pointer<Port>, ffi.Int)>(symbol: 'sp_set_cts')
 external int _setCts(ffi.Pointer<Port> port, int cts);
 
-int setCts(ffi.Pointer<Port> port, Cts cts) => _setCts(port, cts.value);
+int setCts(ffi.Pointer<Port> port, SerialPortCts cts) =>
+    _setCts(port, cts.value);
 
 /// Get the CTS pin behaviour from a port configuration.
 ///
@@ -666,7 +669,7 @@ external int getConfigCts(
 )
 external int _setConfigCts(ffi.Pointer<PortConfig> config, int cts);
 
-int setConfigCts(ffi.Pointer<PortConfig> config, Cts cts) =>
+int setConfigCts(ffi.Pointer<PortConfig> config, SerialPortCts cts) =>
     _setConfigCts(config, cts.value);
 
 /// Set the DTR pin behaviour for the specified serial port.
@@ -680,7 +683,8 @@ int setConfigCts(ffi.Pointer<PortConfig> config, Cts cts) =>
 @ffi.Native<ffi.Int Function(ffi.Pointer<Port>, ffi.Int)>(symbol: 'sp_set_dtr')
 external int _setDtr(ffi.Pointer<Port> port, int dtr);
 
-int setDtr(ffi.Pointer<Port> port, Dtr dtr) => _setDtr(port, dtr.value);
+int setDtr(ffi.Pointer<Port> port, SerialPortDtr dtr) =>
+    _setDtr(port, dtr.value);
 
 /// Get the DTR pin behaviour from a port configuration.
 ///
@@ -714,7 +718,7 @@ external int getConfigDtr(
 )
 external int _setConfigDtr(ffi.Pointer<PortConfig> config, int dtr);
 
-int setConfigDtr(ffi.Pointer<PortConfig> config, Dtr dtr) =>
+int setConfigDtr(ffi.Pointer<PortConfig> config, SerialPortDtr dtr) =>
     _setConfigDtr(config, dtr.value);
 
 /// Set the DSR pin behaviour for the specified serial port.
@@ -728,7 +732,8 @@ int setConfigDtr(ffi.Pointer<PortConfig> config, Dtr dtr) =>
 @ffi.Native<ffi.Int Function(ffi.Pointer<Port>, ffi.Int)>(symbol: 'sp_set_dsr')
 external int _setDsr(ffi.Pointer<Port> port, int dsr);
 
-int setDsr(ffi.Pointer<Port> port, Dsr dsr) => _setDsr(port, dsr.value);
+int setDsr(ffi.Pointer<Port> port, SerialPortDsr dsr) =>
+    _setDsr(port, dsr.value);
 
 /// Get the DSR pin behaviour from a port configuration.
 ///
@@ -762,7 +767,7 @@ external int getConfigDsr(
 )
 external int _setConfigDsr(ffi.Pointer<PortConfig> config, int dsr);
 
-int setConfigDsr(ffi.Pointer<PortConfig> config, Dsr dsr) =>
+int setConfigDsr(ffi.Pointer<PortConfig> config, SerialPortDsr dsr) =>
     _setConfigDsr(config, dsr.value);
 
 /// Set the XON/XOFF configuration for the specified serial port.
@@ -778,7 +783,7 @@ int setConfigDsr(ffi.Pointer<PortConfig> config, Dsr dsr) =>
 )
 external int _setXonXoff(ffi.Pointer<Port> port, int xon_xoff);
 
-int setXonXoff(ffi.Pointer<Port> port, Xonxoff xon_xoff) =>
+int setXonXoff(ffi.Pointer<Port> port, SerialPortXonXoff xon_xoff) =>
     _setXonXoff(port, xon_xoff.value);
 
 /// Get the XON/XOFF configuration from a port configuration.
@@ -813,8 +818,10 @@ external int getConfigXonXoff(
 )
 external int _setConfigXonXoff(ffi.Pointer<PortConfig> config, int xon_xoff);
 
-int setConfigXonXoff(ffi.Pointer<PortConfig> config, Xonxoff xon_xoff) =>
-    _setConfigXonXoff(config, xon_xoff.value);
+int setConfigXonXoff(
+  ffi.Pointer<PortConfig> config,
+  SerialPortXonXoff xon_xoff,
+) => _setConfigXonXoff(config, xon_xoff.value);
 
 /// Set the flow control type in a port configuration.
 ///
@@ -839,7 +846,7 @@ external int _setConfigFlowcontrol(
 
 int setConfigFlowcontrol(
   ffi.Pointer<PortConfig> config,
-  Flowcontrol flowcontrol,
+  SerialPortFlowControl flowcontrol,
 ) => _setConfigFlowcontrol(config, flowcontrol.value);
 
 /// Set the flow control type for the specified serial port.
@@ -860,7 +867,7 @@ int setConfigFlowcontrol(
 )
 external int _setFlowcontrol(ffi.Pointer<Port> port, int flowcontrol);
 
-int setFlowcontrol(ffi.Pointer<Port> port, Flowcontrol flowcontrol) =>
+int setFlowcontrol(ffi.Pointer<Port> port, SerialPortFlowControl flowcontrol) =>
     _setFlowcontrol(port, flowcontrol.value);
 
 /// Read bytes from the specified serial port, blocking until complete.
@@ -1067,7 +1074,7 @@ external int outputWaiting(ffi.Pointer<Port> port);
 )
 external int _flush(ffi.Pointer<Port> port, int buffers);
 
-int flush(ffi.Pointer<Port> port, Buffer buffers) =>
+int flush(ffi.Pointer<Port> port, SerialPortBuffer buffers) =>
     _flush(port, buffers.value);
 
 /// Wait for buffered data to be transmitted.
@@ -1375,7 +1382,7 @@ sealed class Return {
 }
 
 /// Port access modes.
-enum Mode {
+enum SerialPortMode {
   /// Open port for read access.
   read(1),
 
@@ -1386,18 +1393,18 @@ enum Mode {
   readWrite(3);
 
   final int value;
-  const Mode(this.value);
+  const SerialPortMode(this.value);
 
-  static Mode fromValue(int value) => switch (value) {
+  static SerialPortMode fromValue(int value) => switch (value) {
     1 => read,
     2 => write,
     3 => readWrite,
-    _ => throw ArgumentError('Unknown value for Mode: $value'),
+    _ => throw ArgumentError('Unknown value for SerialPortMode: $value'),
   };
 }
 
 /// Port events.
-sealed class Event {
+sealed class SerialPortEvent {
   /// Data received and ready to read.
   static const rxReady = 1;
 
@@ -1409,7 +1416,7 @@ sealed class Event {
 }
 
 /// Buffer selection.
-enum Buffer {
+enum SerialPortBuffer {
   /// Input buffer.
   input(1),
 
@@ -1420,18 +1427,18 @@ enum Buffer {
   both(3);
 
   final int value;
-  const Buffer(this.value);
+  const SerialPortBuffer(this.value);
 
-  static Buffer fromValue(int value) => switch (value) {
+  static SerialPortBuffer fromValue(int value) => switch (value) {
     1 => input,
     2 => output,
     3 => both,
-    _ => throw ArgumentError('Unknown value for Buffer: $value'),
+    _ => throw ArgumentError('Unknown value for SerialPortBuffer: $value'),
   };
 }
 
 /// Parity settings.
-enum Parity {
+enum SerialPortParity {
   /// Special value to indicate setting should be left alone.
   invalid(-1),
 
@@ -1451,21 +1458,21 @@ enum Parity {
   space(4);
 
   final int value;
-  const Parity(this.value);
+  const SerialPortParity(this.value);
 
-  static Parity fromValue(int value) => switch (value) {
+  static SerialPortParity fromValue(int value) => switch (value) {
     -1 => invalid,
     0 => none,
     1 => odd,
     2 => even,
     3 => mark,
     4 => space,
-    _ => throw ArgumentError('Unknown value for Parity: $value'),
+    _ => throw ArgumentError('Unknown value for SerialPortParity: $value'),
   };
 }
 
 /// RTS pin behaviour.
-enum Rts {
+enum SerialPortRts {
   /// Special value to indicate setting should be left alone.
   invalid(-1),
 
@@ -1479,19 +1486,19 @@ enum Rts {
   flowControl(2);
 
   final int value;
-  const Rts(this.value);
+  const SerialPortRts(this.value);
 
-  static Rts fromValue(int value) => switch (value) {
+  static SerialPortRts fromValue(int value) => switch (value) {
     -1 => invalid,
     0 => off,
     1 => on,
     2 => flowControl,
-    _ => throw ArgumentError('Unknown value for Rts: $value'),
+    _ => throw ArgumentError('Unknown value for SerialPortRts: $value'),
   };
 }
 
 /// CTS pin behaviour.
-enum Cts {
+enum SerialPortCts {
   /// Special value to indicate setting should be left alone.
   invalid(-1),
 
@@ -1502,18 +1509,18 @@ enum Cts {
   flowControl(1);
 
   final int value;
-  const Cts(this.value);
+  const SerialPortCts(this.value);
 
-  static Cts fromValue(int value) => switch (value) {
+  static SerialPortCts fromValue(int value) => switch (value) {
     -1 => invalid,
     0 => ignore,
     1 => flowControl,
-    _ => throw ArgumentError('Unknown value for Cts: $value'),
+    _ => throw ArgumentError('Unknown value for SerialPortCts: $value'),
   };
 }
 
 /// DTR pin behaviour.
-enum Dtr {
+enum SerialPortDtr {
   /// Special value to indicate setting should be left alone.
   invalid(-1),
 
@@ -1527,19 +1534,19 @@ enum Dtr {
   flowControl(2);
 
   final int value;
-  const Dtr(this.value);
+  const SerialPortDtr(this.value);
 
-  static Dtr fromValue(int value) => switch (value) {
+  static SerialPortDtr fromValue(int value) => switch (value) {
     -1 => invalid,
     0 => off,
     1 => on,
     2 => flowControl,
-    _ => throw ArgumentError('Unknown value for Dtr: $value'),
+    _ => throw ArgumentError('Unknown value for SerialPortDtr: $value'),
   };
 }
 
 /// DSR pin behaviour.
-enum Dsr {
+enum SerialPortDsr {
   /// Special value to indicate setting should be left alone.
   invalid(-1),
 
@@ -1550,18 +1557,18 @@ enum Dsr {
   flowControl(1);
 
   final int value;
-  const Dsr(this.value);
+  const SerialPortDsr(this.value);
 
-  static Dsr fromValue(int value) => switch (value) {
+  static SerialPortDsr fromValue(int value) => switch (value) {
     -1 => invalid,
     0 => ignore,
     1 => flowControl,
-    _ => throw ArgumentError('Unknown value for Dsr: $value'),
+    _ => throw ArgumentError('Unknown value for SerialPortDsr: $value'),
   };
 }
 
 /// XON/XOFF flow control behaviour.
-enum Xonxoff {
+enum SerialPortXonXoff {
   /// Special value to indicate setting should be left alone.
   invalid(-1),
 
@@ -1578,20 +1585,20 @@ enum Xonxoff {
   inputOutput(3);
 
   final int value;
-  const Xonxoff(this.value);
+  const SerialPortXonXoff(this.value);
 
-  static Xonxoff fromValue(int value) => switch (value) {
+  static SerialPortXonXoff fromValue(int value) => switch (value) {
     -1 => invalid,
     0 => disabled,
     1 => input,
     2 => output,
     3 => inputOutput,
-    _ => throw ArgumentError('Unknown value for Xonxoff: $value'),
+    _ => throw ArgumentError('Unknown value for SerialPortXonXoff: $value'),
   };
 }
 
 /// Standard flow control combinations.
-enum Flowcontrol {
+enum SerialPortFlowControl {
   /// No flow control.
   none(0),
 
@@ -1605,19 +1612,19 @@ enum Flowcontrol {
   dtrDsr(3);
 
   final int value;
-  const Flowcontrol(this.value);
+  const SerialPortFlowControl(this.value);
 
-  static Flowcontrol fromValue(int value) => switch (value) {
+  static SerialPortFlowControl fromValue(int value) => switch (value) {
     0 => none,
     1 => xonXoff,
     2 => rtsCts,
     3 => dtrDsr,
-    _ => throw ArgumentError('Unknown value for Flowcontrol: $value'),
+    _ => throw ArgumentError('Unknown value for SerialPortFlowControl: $value'),
   };
 }
 
 /// Input signals.
-sealed class Signal {
+sealed class SerialPortSignal {
   /// Clear to send.
   static const cts = 1;
 
@@ -1634,7 +1641,7 @@ sealed class Signal {
 /// Transport types.
 ///
 /// @since 0.1.1
-enum Transport {
+enum SerialPortTransport {
   /// Native platform serial port. @since 0.1.1
   native(0),
 
@@ -1645,13 +1652,13 @@ enum Transport {
   bluetooth(2);
 
   final int value;
-  const Transport(this.value);
+  const SerialPortTransport(this.value);
 
-  static Transport fromValue(int value) => switch (value) {
+  static SerialPortTransport fromValue(int value) => switch (value) {
     0 => native,
     1 => usb,
     2 => bluetooth,
-    _ => throw ArgumentError('Unknown value for Transport: $value'),
+    _ => throw ArgumentError('Unknown value for SerialPortTransport: $value'),
   };
 }
 

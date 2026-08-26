@@ -64,5 +64,3 @@ class SerialPortInfo extends Equatable {
     return 'SerialPortInfo(${props.join(', ')})';
   }
 }
-
-typedef SerialPortTransport = sp.Transport;
