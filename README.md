@@ -40,52 +40,110 @@ flutter pub add libserialport_plus
 Import the package in your Dart code:
 
 ```dart
+import 'dart:typed_data';
+
 import 'package:libserialport_plus/libserialport_plus.dart';
 
-// Get a list of available serial ports
-List<String> ports = SerialPort.getAvailablePorts();
+void communicate() {
+  final ports = SerialPort.getAvailablePorts();
+  if (ports.isEmpty) return;
 
-// Create a serial port instance (MUST BE DISPOSED AFTER USE)
-SerialPort port = SerialPort("COM3");
+  final port = SerialPort(ports.first);
+  try {
+    final info = port.getInfo();
+    print('${info.name}: ${info.description} (${info.transport.name})');
 
-// Get information about the serial port
-SerialPortInfo info = port.getInfo();
+    port.open();
 
-// Open the serial port
-port.open(SerialPortMode.readWrite);
+    final isOpen = port.isOpen();
+    if (isOpen) {
+      final bytes = port.read(1024, timeout: 1000);
+      print('Received ${bytes.length} bytes');
 
-// Check if the serial port is open
-bool isOpen = port.isOpen();
-
-// Read bytes from the serial port
-Uint8List bytes = port.read(1024);
-
-// Write some bytes to the serial port
-port.write(bytes);
-
-// Close the serial port
-port.close();
-
-// Dispose the serial port
-port.dispose();
+      final message = Uint8List.fromList([0x68, 0x69, 0x0a]);
+      final written = port.write(message, timeout: 1000);
+      print('Wrote $written bytes');
+    }
+  } on SerialPortException catch (error) {
+    print('Serial port error ${error.code}: ${error.message}');
+  } finally {
+    if (port.isOpen()) {
+      port.close();
+    }
+    port.dispose();
+  }
+}
 ```
 
-### Reader
+`SerialPort` accepts the platform-specific name returned by
+`SerialPort.getAvailablePorts()`, such as `COM3` on Windows or
+`/dev/ttyUSB0` on Linux. Constructing a port does not open it. Always close
+and dispose the port when finished.
+
+### Reading and writing
+
+`read` and `write` operate on bytes using `Uint8List`. Their `timeout` is in
+milliseconds:
+
+- `0` (default) blocks until data is available or the write completes.
+- A negative value performs a non-blocking operation.
+- A positive value blocks until data is available, the write completes, or the
+  timeout expires.
+
+`read` may return fewer bytes than requested, and `write` returns the number of
+bytes accepted by the native library. Both methods require an open port.
+
+### Configuration
+
+Use `SerialPortConfig` to read or update serial settings. Every configuration
+property is optional; a `null` property is left unchanged by `setConfig`.
 
 ```dart
-// Create and open a serial port
-SerialPort port = SerialPort("COM3");
-port.open();
+final config = port.getConfig();
+print('Current baud rate: ${config.baudRate}');
 
-SerialPortReader reader = SerialPortReader(port);
-
-reader.stream.listen((Uint8List bytes) {
-  // Do something with the bytes
-});
-
-// After you are done, close the reader
-reader.close();
+port.setConfig(const SerialPortConfig(
+  baudRate: 115200,
+  bits: 8,
+  parity: SerialPortParity.none,
+  stopBits: 1,
+  xonXoff: SerialPortXonXoff.disabled,
+));
 ```
+
+### Background reader
+
+`SerialPortReader` reads incoming data on a background isolate and exposes
+non-empty byte chunks through a stream. The port must be open before creating
+the reader. Native read errors are delivered as `SerialPortException` stream
+errors.
+
+```dart
+Future<void> readInBackground() async {
+  final port = SerialPort('COM3');
+  port.open();
+
+  final reader = SerialPortReader(port);
+
+  final subscription = reader.stream.listen((bytes) {
+    print('Received ${bytes.length} bytes');
+  }, onError: (Object error) {
+    if (error is SerialPortException) {
+      print('Reader error: ${error.message}');
+    }
+  });
+
+  // When finished, stop the reader before closing and disposing the port.
+  await subscription.cancel();
+  await reader.close();
+  port.close();
+  port.dispose();
+}
+```
+
+See the [API documentation](https://pub.dev/documentation/libserialport_plus/latest/)
+for the complete public API, including supported serial modes, parity, flow
+control, and transport types.
 
 ## macOS
 
@@ -115,4 +173,4 @@ for them and consuming apps still build.
 To use the native code, bindings in Dart are needed.
 To avoid writing these by hand, they are generated from the header file
 (`src/libserialport/libserialport.h`) by `package:ffigen`.
-Regenerate the bindings by running `dart run ffigen --config ffigen.yaml`.
+Regenerate the bindings by running `dart run tool/ffigen.dart`.

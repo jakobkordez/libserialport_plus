@@ -24,6 +24,13 @@ part 'serial_port_config.dart';
 part 'serial_port_reader.dart';
 part 'serial_port_info.dart';
 
+/// Represents a serial port and provides operations for opening, reading from,
+/// writing to, and configuring it.
+///
+/// Create an instance with an operating-system-specific port name, such as
+/// `COM3` on Windows or `/dev/ttyUSB0` on Linux. The port is not opened by the
+/// constructor; call [open] before performing I/O. Call [dispose] when the
+/// instance is no longer needed.
 class SerialPort extends Equatable implements Finalizable {
   static final _finalizer = NativeFinalizer(sp.addresses.close.cast());
 
@@ -31,6 +38,10 @@ class SerialPort extends Equatable implements Finalizable {
 
   const SerialPort._(this._port);
 
+  /// Creates a serial port handle for [portName].
+  ///
+  /// The port remains closed until [open] is called. Throws a
+  /// [SerialPortException] if the named port cannot be found or allocated.
   factory SerialPort(String portName) {
     final out = calloc<Pointer<sp.Port>>();
     final cStr = portName.toNativeUtf8().cast<Char>();
@@ -43,6 +54,10 @@ class SerialPort extends Equatable implements Finalizable {
     }
   }
 
+  /// Releases the native resources associated with this serial port.
+  ///
+  /// The port should be [close]d before it is disposed. Do not use this
+  /// instance after calling [dispose].
   void dispose() => sp.freePort(_port);
 
   //#region Opening and closing
@@ -61,12 +76,15 @@ class SerialPort extends Equatable implements Finalizable {
   }
 
   /// Closes an open serial port.
+  ///
+  /// Closing a port stops I/O and releases its operating-system handle. The
+  /// port can be opened again later with [open].
   void close() {
     _finalizer.detach(this);
     assertReturn(sp.close(_port));
   }
 
-  /// Returns true if the serial port is open.
+  /// Whether the serial port currently has an open operating-system handle.
   bool isOpen() => using((arena) {
     final ptr = arena<Int>();
     assertReturn(sp.getPortHandle(_port, ptr.cast()));
@@ -77,7 +95,7 @@ class SerialPort extends Equatable implements Finalizable {
 
   //#region Reading and writing
 
-  /// Read bytes from the specified serial port
+  /// Reads up to [bytes] bytes from the serial port.
   ///
   /// [timeout] in milliseconds:
   /// - if 0 (default), the function will block until some bytes are available
@@ -85,6 +103,9 @@ class SerialPort extends Equatable implements Finalizable {
   /// - if > 0, the function will block until some bytes are available or timeout
   ///
   /// Returns the bytes read.
+  ///
+  /// The returned list can contain fewer than [bytes] bytes when the timeout
+  /// expires or the native backend returns fewer bytes.
   Uint8List read(int bytes, {int timeout = 0}) => using((arena) {
     final ptr = arena<Uint8>(bytes);
     final ret = timeout < 0
@@ -93,7 +114,7 @@ class SerialPort extends Equatable implements Finalizable {
     return Uint8List.fromList(ptr.asTypedList(assertReturn(ret)));
   });
 
-  /// Write bytes to the specified serial port
+  /// Writes [bytes] to the serial port.
   ///
   /// [timeout] in milliseconds:
   /// - if 0 (default), the function will block until complete
@@ -115,6 +136,10 @@ class SerialPort extends Equatable implements Finalizable {
 
   //#region Configuration
 
+  /// Reads the current configuration from the serial port.
+  ///
+  /// Unsupported settings are represented by `null` in the returned
+  /// [SerialPortConfig].
   SerialPortConfig getConfig() => using((arena) {
     final ptr = arena<Pointer<sp.PortConfig>>();
     assertReturn(sp.newConfig(ptr));
@@ -151,6 +176,9 @@ class SerialPort extends Equatable implements Finalizable {
     );
   });
 
+  /// Applies the non-null settings in [value] to the serial port.
+  ///
+  /// A `null` property leaves the corresponding native setting unchanged.
   void setConfig(SerialPortConfig value) {
     set<T>(int Function(Pointer<sp.Port>, T value) func, T? value) {
       if (value == null) return;
@@ -172,6 +200,10 @@ class SerialPort extends Equatable implements Finalizable {
 
   //#region Port info
 
+  /// Returns descriptive and transport-specific information for this port.
+  ///
+  /// USB and Bluetooth fields are populated only for ports using the
+  /// corresponding transport and are otherwise `null`.
   SerialPortInfo getInfo() {
     getS(Pointer<Char> Function(Pointer<sp.Port>) func) {
       final ptr = func(_port);
@@ -234,6 +266,10 @@ class SerialPort extends Equatable implements Finalizable {
 
   //#region Static methods
 
+  /// Returns the operating-system-specific names of available serial ports.
+  ///
+  /// The returned names can be passed to [SerialPort] to create a handle.
+  /// Throws a [SerialPortException] if the native port enumeration fails.
   static List<String> getAvailablePorts() {
     final out = calloc<Pointer<Pointer<sp.Port>>>();
 

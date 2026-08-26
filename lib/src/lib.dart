@@ -34,10 +34,15 @@ SerialPortException? getLastError() {
   }
 }
 
+/// An error reported by the native serial port library.
 class SerialPortException implements Exception {
+  /// The native error code.
   final int code;
+
+  /// A human-readable description of the error.
   final String message;
 
+  /// Creates an exception with a native [code] and [message].
   SerialPortException(this.code, this.message);
 
   @override

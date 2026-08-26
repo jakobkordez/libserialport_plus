@@ -1,3 +1,9 @@
+## 1.0.4
+
+- Add extensive documentation for the public API.
+- Expand README usage, configuration, reader, and lifecycle guidance.
+- Update the README binding generation command.
+
 ## 1.0.3
 
 - Code refactor

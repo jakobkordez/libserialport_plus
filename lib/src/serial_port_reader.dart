@@ -1,12 +1,27 @@
 part of 'serial_port.dart';
 
+/// Reads incoming data from a serial port on a background isolate.
+///
+/// The port must already be open. Subscribe to [stream] to receive each
+/// non-empty chunk of bytes, and call [close] when the reader is no longer
+/// needed.
 class SerialPortReader {
   final _receivePort = ReceivePort();
   final _sendPort = Completer<SendPort?>();
 
   final _controller = StreamController<Uint8List>();
+
+  /// A stream of non-empty byte chunks received from the serial port.
+  ///
+  /// Native read errors are reported as [SerialPortException] errors on this
+  /// stream.
   Stream<Uint8List> get stream => _controller.stream;
 
+  /// Starts reading from [port] with a native read buffer of [bufferSize]
+  /// bytes.
+  ///
+  /// [port] must be open before creating the reader. The reader owns its
+  /// background isolate and should be stopped with [close].
   SerialPortReader(SerialPort port, {int bufferSize = 1024}) {
     _receivePort.listen((message) {
       if (message is SendPort) _sendPort.complete(message);
@@ -27,6 +42,7 @@ class SerialPortReader {
     );
   }
 
+  /// Stops the background reader and completes when its stream is closed.
   Future<void> close() async {
     _sendPort.future.then((sendPort) => sendPort?.send(_StopSignal()));
     await _controller.done;
