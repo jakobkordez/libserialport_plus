@@ -1,3 +1,7 @@
+## 1.0.5
+
+- Add pub.dev topics.
+
 ## 1.0.4
 
 - Add extensive documentation for the public API.
