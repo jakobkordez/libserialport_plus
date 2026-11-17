@@ -26,7 +26,7 @@ void main() {
 
     await Future.delayed(const Duration(seconds: 1));
 
-    reader.close();
+    await reader.close();
 
     port1.close();
     port2.close();
@@ -75,6 +75,60 @@ void main() {
 
     // Far below the reader's 100 ms read timeout.
     expect(worst, lessThan(const Duration(milliseconds: 60)));
+  });
+
+  test('Close and dispose the port while the reader is reading', () async {
+    // An unawaited reader.close() followed by closing and disposing the port
+    // used to close and free the port while the reader's isolate was inside
+    // a native read. On Windows the pending read then corrupted the heap.
+    final writer = SerialPort(firstPort);
+    writer.open();
+
+    for (var i = 0; i < 50; i++) {
+      final port = SerialPort(secondPort);
+      port.open();
+
+      final reader = SerialPortReader(port);
+      // Fails on a stream error: the reader must stop cleanly.
+      final done = reader.stream.drain<void>();
+
+      // Vary where in the reader's read cycle the port is closed.
+      await Future.delayed(Duration(milliseconds: i % 10 * 5));
+      writer.write(Uint8List.fromList([i]));
+
+      reader.close();
+      port.close();
+      port.dispose();
+
+      // The port is closed and freed by the time the stream is done.
+      await done.timeout(const Duration(seconds: 2));
+    }
+
+    writer.close();
+    writer.dispose();
+  });
+
+  test('Close waits for the reader to stop', () async {
+    final port = SerialPort(secondPort);
+    port.open();
+
+    final reader = SerialPortReader(port);
+    final done = reader.stream.drain<void>();
+
+    port.close();
+
+    expect(port.isOpen(), isFalse);
+    expect(() => port.open(), throwsStateError);
+    expect(() => SerialPortReader(port), throwsStateError);
+
+    await done.timeout(const Duration(seconds: 2));
+
+    // The deferred close has run, so the port can be opened again.
+    port.open();
+    expect(port.isOpen(), isTrue);
+
+    port.close();
+    port.dispose();
   });
 
   test('Wait after close', () async {

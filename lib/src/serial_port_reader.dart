@@ -21,31 +21,61 @@ class SerialPortReader {
   /// bytes.
   ///
   /// [port] must be open before creating the reader. The reader owns its
-  /// background isolate and should be stopped with [close].
+  /// background isolate and should be stopped with [close]. Closing or
+  /// disposing [port] also stops the reader.
+  ///
+  /// Throws a [StateError] if [port] has been disposed or is closing.
   SerialPortReader(SerialPort port, {int bufferSize = 1024}) {
+    final address = port._handle.address;
+    if (port._lifecycle.closePending) {
+      throw StateError('Cannot read from a SerialPort that is closing');
+    }
+
     _receivePort.listen((message) {
       if (message is SendPort) _sendPort.complete(message);
       if (message is Uint8List) _controller.add(message);
       if (message is SerialPortException) _controller.addError(message);
     });
 
+    // The port must outlive any native call this reader's isolate makes, so
+    // it is closed and freed only after the isolate has exited.
+    port._lifecycle.readers.add(this);
+
     final closePort = ReceivePort();
     closePort.listen((_) {
       closePort.close();
       _dispose();
+      port._readerExited(this);
     });
 
     Isolate.spawn(
       _startRemoteIsolate,
-      _IsolateParams(_receivePort.sendPort, port._port.address, bufferSize),
+      _IsolateParams(_receivePort.sendPort, address, bufferSize),
       onExit: closePort.sendPort,
+    ).then<void>(
+      (_) {},
+      onError: (Object error, StackTrace stackTrace) {
+        // No isolate, so no exit notification either.
+        closePort.close();
+        _sendPort.complete(null);
+        _controller.addError(error, stackTrace);
+        _dispose();
+        port._readerExited(this);
+      },
     );
   }
 
   /// Stops the background reader and completes when its stream is closed.
+  ///
+  /// Await this before closing or disposing the port to close the port
+  /// without delay.
   Future<void> close() async {
-    _sendPort.future.then((sendPort) => sendPort?.send(_StopSignal()));
+    _stop();
     await _controller.done;
+  }
+
+  void _stop() {
+    _sendPort.future.then((sendPort) => sendPort?.send(_StopSignal()));
   }
 
   void _dispose() {

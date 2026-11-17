@@ -21,6 +21,35 @@ void main() {
     port.dispose();
   });
 
+  test('Dispose closes an open port', () {
+    final port = SerialPort(firstPort);
+    port.open();
+
+    // Used to leave the port open, with a finalizer that later closed the
+    // freed port.
+    port.dispose();
+
+    // The port is free to be opened again.
+    final again = SerialPort(firstPort);
+    again.open();
+    again.close();
+    again.dispose();
+  });
+
+  test('Use after dispose', () {
+    final port = SerialPort(firstPort);
+    port.dispose();
+
+    expect(() => port.open(), throwsStateError);
+    expect(() => port.close(), throwsStateError);
+    expect(() => port.isOpen(), throwsStateError);
+    expect(() => port.getConfig(), throwsStateError);
+    expect(() => SerialPortReader(port), throwsStateError);
+
+    // Disposing again has no effect.
+    port.dispose();
+  });
+
   test('Get port info', () {
     final port = SerialPort(firstPort);
     final info = port.getInfo();

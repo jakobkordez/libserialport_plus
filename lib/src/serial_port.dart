@@ -36,7 +36,18 @@ class SerialPort extends Equatable implements Finalizable {
 
   final Pointer<sp.Port> _port;
 
-  const SerialPort._(this._port);
+  final _lifecycle = _PortLifecycle();
+
+  SerialPort._(this._port);
+
+  /// The native port, for any use that follows [dispose] to fail cleanly
+  /// rather than touch freed memory.
+  Pointer<sp.Port> get _handle {
+    if (_lifecycle.disposed) {
+      throw StateError('SerialPort used after dispose()');
+    }
+    return _port;
+  }
 
   /// Creates a serial port handle for [portName].
   ///
@@ -54,11 +65,34 @@ class SerialPort extends Equatable implements Finalizable {
     }
   }
 
-  /// Releases the native resources associated with this serial port.
+  /// Releases the native resources associated with this serial port, closing
+  /// it first if it is still open.
   ///
-  /// The port should be [close]d before it is disposed. Do not use this
-  /// instance after calling [dispose].
-  void dispose() => sp.freePort(_port);
+  /// If a [SerialPortReader] is still reading from the port, it is stopped
+  /// and the resources are released once it has finished its current read,
+  /// so the reader never uses a freed port.
+  ///
+  /// Do not use this instance after calling [dispose]; doing so throws a
+  /// [StateError]. Calling [dispose] again has no effect.
+  void dispose() {
+    if (_lifecycle.disposed) return;
+    _lifecycle.disposed = true;
+
+    if (_lifecycle.readers.isEmpty) {
+      _release();
+    } else {
+      _stopReaders();
+    }
+  }
+
+  /// Closes the port if it is open and frees it.
+  void _release() {
+    _finalizer.detach(this);
+    // Fails harmlessly if the port is not open, and nobody is left to report
+    // a failure to.
+    sp.close(_port);
+    sp.freePort(_port);
+  }
 
   //#region Opening and closing
 
@@ -70,8 +104,17 @@ class SerialPort extends Equatable implements Finalizable {
   /// - [SerialPortMode.readWrite]
   ///
   /// If [mode] is not specified, defaults to [SerialPortMode.readWrite].
+  ///
+  /// Throws a [StateError] if the port is still closing; see [close].
   void open([SerialPortMode mode = SerialPortMode.readWrite]) {
-    assertReturn(sp.open(_port, mode));
+    if (_lifecycle.closePending) {
+      throw StateError(
+        'SerialPort is still closing while its SerialPortReader finishes '
+        'reading. Await SerialPortReader.close() before closing the port to '
+        'reopen it at once.',
+      );
+    }
+    assertReturn(sp.open(_handle, mode));
     _finalizer.attach(this, _port.cast(), detach: this);
   }
 
@@ -79,17 +122,61 @@ class SerialPort extends Equatable implements Finalizable {
   ///
   /// Closing a port stops I/O and releases its operating-system handle. The
   /// port can be opened again later with [open].
+  ///
+  /// If a [SerialPortReader] is still reading from the port, it is stopped
+  /// and the port is closed once it has finished its current read, which
+  /// takes at most about 100 ms. Until then [isOpen] reports `false` and
+  /// [open] throws a [StateError]. To close the port at once, await
+  /// [SerialPortReader.close] first.
   void close() {
+    final port = _handle;
+
+    if (_lifecycle.readers.isNotEmpty) {
+      _lifecycle.closePending = true;
+      _stopReaders();
+      return;
+    }
+
     _finalizer.detach(this);
-    assertReturn(sp.close(_port));
+    assertReturn(sp.close(port));
   }
 
   /// Whether the serial port currently has an open operating-system handle.
+  ///
+  /// Reports `false` once [close] has been called, even while the close is
+  /// waiting for a [SerialPortReader] to finish.
   bool isOpen() => using((arena) {
+    if (_lifecycle.closePending) return false;
     final ptr = arena<Int>();
-    assertReturn(sp.getPortHandle(_port, ptr.cast()));
+    assertReturn(sp.getPortHandle(_handle, ptr.cast()));
     return ptr.value > 0;
   });
+
+  void _stopReaders() {
+    for (final reader in _lifecycle.readers) {
+      reader._stop();
+    }
+  }
+
+  /// Called once the isolate of [reader] has exited, so it can no longer be
+  /// inside a native call on this port. Completes a pending [close] or
+  /// [dispose] when the last reader is gone.
+  void _readerExited(SerialPortReader reader) {
+    _lifecycle.readers.remove(reader);
+    if (_lifecycle.readers.isNotEmpty) return;
+
+    final closePending = _lifecycle.closePending;
+    _lifecycle.closePending = false;
+
+    if (_lifecycle.disposed) {
+      _release();
+    } else if (closePending) {
+      _finalizer.detach(this);
+      // The caller of close() has already returned; nobody is left to report
+      // a failure to.
+      sp.close(_port);
+    }
+  }
 
   //#endregion
 
@@ -109,8 +196,8 @@ class SerialPort extends Equatable implements Finalizable {
   Uint8List read(int bytes, {int timeout = 0}) => using((arena) {
     final ptr = arena<Uint8>(bytes);
     final ret = timeout < 0
-        ? sp.nonblockingRead(_port, ptr.cast(), bytes)
-        : sp.blockingRead(_port, ptr.cast(), bytes, timeout);
+        ? sp.nonblockingRead(_handle, ptr.cast(), bytes)
+        : sp.blockingRead(_handle, ptr.cast(), bytes, timeout);
     return Uint8List.fromList(ptr.asTypedList(assertReturn(ret)));
   });
 
@@ -127,8 +214,8 @@ class SerialPort extends Equatable implements Finalizable {
     final ptr = arena<Uint8>(len);
     ptr.asTypedList(len).setAll(0, bytes);
     final ret = timeout < 0
-        ? sp.nonblockingWrite(_port, ptr.cast(), len)
-        : sp.blockingWrite(_port, ptr.cast(), len, timeout);
+        ? sp.nonblockingWrite(_handle, ptr.cast(), len)
+        : sp.blockingWrite(_handle, ptr.cast(), len, timeout);
     return assertReturn(ret);
   });
 
@@ -143,7 +230,7 @@ class SerialPort extends Equatable implements Finalizable {
   SerialPortConfig getConfig() => using((arena) {
     final ptr = arena<Pointer<sp.PortConfig>>();
     assertReturn(sp.newConfig(ptr));
-    assertReturn(sp.getConfig(_port, ptr.value));
+    assertReturn(sp.getConfig(_handle, ptr.value));
 
     final valPtr = arena<Int>();
     get(int Function(Pointer<sp.PortConfig>, Pointer<Int>) func) {
@@ -206,7 +293,7 @@ class SerialPort extends Equatable implements Finalizable {
       set(sp.setConfigDsr, value.dsr);
       set(sp.setConfigXonXoff, value.xonXoff);
 
-      assertReturn(sp.setConfig(_port, config));
+      assertReturn(sp.setConfig(_handle, config));
     } finally {
       sp.freeConfig(config);
     }
@@ -222,7 +309,7 @@ class SerialPort extends Equatable implements Finalizable {
   /// corresponding transport and are otherwise `null`.
   SerialPortInfo getInfo() {
     getS(Pointer<Char> Function(Pointer<sp.Port>) func) {
-      final ptr = func(_port);
+      final ptr = func(_handle);
       if (ptr == nullptr) return '';
       return ptr.cast<Utf8>().toDartString();
     }
@@ -231,7 +318,7 @@ class SerialPort extends Equatable implements Finalizable {
         using((arena) {
           final ptr1 = arena<Int>();
           final ptr2 = arena<Int>();
-          final ret = func(_port, ptr1, ptr2);
+          final ret = func(_handle, ptr1, ptr2);
           if (ret == sp.Return.ERR_SUPP) return (null, null);
           assertReturn(ret);
           return (ptr1.value, ptr2.value);
@@ -245,7 +332,7 @@ class SerialPort extends Equatable implements Finalizable {
     final name = getS(sp.getPortName);
     final description = getS(sp.getPortDescription);
     final transport = SerialPortTransport.fromValue(
-      assertReturn(sp.getPortTransport(_port).value),
+      assertReturn(sp.getPortTransport(_handle).value),
     );
 
     String? manufacturer, product, serial;
@@ -314,4 +401,24 @@ class SerialPort extends Equatable implements Finalizable {
 
   @override
   List<Object?> get props => [_port];
+}
+
+/// Tracks what may still be using a native port, so it is closed and freed
+/// only once nothing can touch it.
+///
+/// A [SerialPortReader] reads on its own isolate, which can be inside a
+/// native read at any moment. Closing or freeing the port under it, as an
+/// unawaited [SerialPortReader.close] followed by [SerialPort.close] or
+/// [SerialPort.dispose] would, makes that read use closed handles and freed
+/// memory; on Windows the pending read then corrupts the heap.
+class _PortLifecycle {
+  /// Readers whose isolate has not exited yet.
+  final readers = <SerialPortReader>{};
+
+  /// [SerialPort.close] was called and waits for [readers] to exit.
+  bool closePending = false;
+
+  /// [SerialPort.dispose] was called. The port is freed once [readers] have
+  /// exited.
+  bool disposed = false;
 }

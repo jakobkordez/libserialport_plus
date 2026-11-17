@@ -141,6 +141,12 @@ Future<void> readInBackground() async {
 }
 ```
 
+Closing or disposing the port also stops its reader. Because the reader may be
+in the middle of a native read, the port is then closed once that read has
+finished, within about 100 ms; until then `isOpen()` reports `false` and
+`open()` throws a `StateError`. Await `reader.close()` first to close the port
+at once.
+
 See the [API documentation](https://pub.dev/documentation/libserialport_plus/latest/)
 for the complete public API, including supported serial modes, parity, flow
 control, and transport types.
