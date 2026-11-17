@@ -1,8 +1,7 @@
 import 'dart:ffi';
 
-import 'package:ffi/ffi.dart';
-
 import 'libserialport_bindings.g.dart' as sp;
+import 'native_strings.dart';
 
 int assertReturn(int value) {
   if (value >= 0) return value;
@@ -27,7 +26,7 @@ SerialPortException? getLastError() {
   try {
     return SerialPortException(
       code,
-      ptr != nullptr ? ptr.cast<Utf8>().toDartString() : '',
+      ptr != nullptr ? decodeNativeString(ptr) : '',
     );
   } finally {
     sp.freeErrorMessage(ptr);

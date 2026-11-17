@@ -8,6 +8,7 @@ import 'package:ffi/ffi.dart';
 
 import 'lib.dart';
 import 'libserialport_bindings.g.dart' as sp;
+import 'native_strings.dart';
 
 import 'libserialport_bindings.g.dart'
     show
@@ -208,7 +209,7 @@ class SerialPort extends Equatable implements Finalizable {
     getS(Pointer<Char> Function(Pointer<sp.Port>) func) {
       final ptr = func(_port);
       if (ptr == nullptr) return '';
-      return ptr.cast<Utf8>().toDartString();
+      return decodeNativeString(ptr);
     }
 
     getI(int Function(Pointer<sp.Port>, Pointer<Int>, Pointer<Int>) func) =>
@@ -281,7 +282,7 @@ class SerialPort extends Equatable implements Finalizable {
       while (out.value[count] != nullptr) {
         final portPtr = sp.getPortName(out.value[count]);
         if (portPtr != nullptr) {
-          final portName = portPtr.cast<Utf8>().toDartString();
+          final portName = decodeNativeString(portPtr);
           ports.add(portName);
         }
         count++;

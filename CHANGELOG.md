@@ -1,3 +1,12 @@
+## Unreleased
+
+- Fix `FormatException: Missing extension byte` on non-English Windows: native
+  strings from libserialport are no longer decoded as strict UTF-8. libserialport
+  converts device names with the system ANSI code page, so the German friendly
+  name `Serielles USB-Gerät (COM7)` arrives as CP1252 bytes, which made every
+  enumeration call throw and left the device undetectable. Strings are now
+  decoded as UTF-8 with a Latin-1 fallback.
+
 ## 1.0.5
 
 - Add pub.dev topics.
