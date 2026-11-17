@@ -1,3 +1,8 @@
+## 1.0.6
+
+- Fix `getAvailablePorts()` failing when a single port is inaccessible, e.g. when SELinux denies access to a device node on Android. Such ports are now left out of the list ([#8](https://github.com/jakobkordez/libserialport_plus/issues/8)).
+- Fix port names, descriptions, USB strings and error messages containing non-ASCII characters on Windows by using UTF-8 throughout.
+
 ## 1.0.5
 
 - Add pub.dev topics.
