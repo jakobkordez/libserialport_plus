@@ -70,8 +70,11 @@ class SerialPortReader {
     // Main loop
     while (running) {
       try {
+        // Returns as soon as any data is available, rather than waiting for
+        // the buffer to fill. The timeout bounds how long a stop request
+        // can go unnoticed.
         final len = assertReturn(
-          sp.blockingRead(port, buffer.cast(), bufferSize, 100),
+          sp.blockingReadNext(port, buffer.cast(), bufferSize, 100),
         );
         if (len > 0) {
           final bytes = buffer.asTypedList(len);
@@ -82,7 +85,9 @@ class SerialPortReader {
         if (error != null) params.sendPort.send(error);
         break;
       }
-      await Future.delayed(const Duration(milliseconds: 5));
+      // Let the event loop run so a stop signal can be received. No delay is
+      // needed: the read above already waits while the port is idle.
+      await Future.delayed(Duration.zero);
     }
 
     // Cleanup

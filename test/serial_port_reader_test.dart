@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:test/test.dart';
@@ -32,6 +33,48 @@ void main() {
 
     port1.dispose();
     port2.dispose();
+  });
+
+  test('Delivers data without waiting for the buffer to fill', () async {
+    final data = Uint8List.fromList(List.generate(16, (i) => i));
+
+    final port1 = SerialPort(firstPort);
+    final port2 = SerialPort(secondPort);
+
+    port1.open();
+    port2.open();
+
+    final reader = SerialPortReader(port2);
+
+    Completer<void>? arrived;
+    reader.stream.listen((_) {
+      if (arrived?.isCompleted == false) arrived!.complete();
+    });
+
+    final latencies = <Duration>[];
+    for (var i = 0; i < 20; i++) {
+      // Vary where in the reader's read cycle the data lands.
+      await Future.delayed(Duration(milliseconds: 20 + i * 7));
+
+      arrived = Completer<void>();
+      final watch = Stopwatch()..start();
+      port1.write(data);
+      await arrived.future.timeout(const Duration(seconds: 2));
+      latencies.add(watch.elapsed);
+    }
+
+    await reader.close();
+
+    port1.close();
+    port2.close();
+
+    port1.dispose();
+    port2.dispose();
+
+    final worst = latencies.reduce((a, b) => a > b ? a : b);
+
+    // Far below the reader's 100 ms read timeout.
+    expect(worst, lessThan(const Duration(milliseconds: 60)));
   });
 
   test('Wait after close', () async {
