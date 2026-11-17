@@ -156,4 +156,72 @@ void main() {
 
     expect(newConfig, config);
   });
+
+  test('Set RTS/CTS flow control', () {
+    // On Linux, Android and macOS the two can only be changed together, so
+    // this fails there unless setConfig applies them in one native call.
+    final port = SerialPort(firstPort);
+
+    port.open();
+
+    port.setConfig(
+      const SerialPortConfig(
+        rts: SerialPortRts.flowControl,
+        cts: SerialPortCts.flowControl,
+      ),
+    );
+    final enabled = port.getConfig();
+
+    port.setConfig(
+      const SerialPortConfig(rts: SerialPortRts.on, cts: SerialPortCts.ignore),
+    );
+    final disabled = port.getConfig();
+
+    port.close();
+    port.dispose();
+
+    expect(enabled.rts, SerialPortRts.flowControl);
+    expect(enabled.cts, SerialPortCts.flowControl);
+    expect(disabled.rts, SerialPortRts.on);
+    expect(disabled.cts, SerialPortCts.ignore);
+  });
+
+  test('Set config leaves omitted settings unchanged', () {
+    const base = SerialPortConfig(
+      baudRate: 115200,
+      bits: 8,
+      parity: SerialPortParity.none,
+      stopBits: 1,
+      rts: SerialPortRts.on,
+      cts: SerialPortCts.ignore,
+      dtr: SerialPortDtr.on,
+      dsr: SerialPortDsr.ignore,
+      xonXoff: SerialPortXonXoff.disabled,
+    );
+    final port = SerialPort(firstPort);
+
+    port.open();
+
+    port.setConfig(base);
+    port.setConfig(const SerialPortConfig(baudRate: 57600, stopBits: 2));
+    final newConfig = port.getConfig();
+
+    port.close();
+    port.dispose();
+
+    expect(
+      newConfig,
+      const SerialPortConfig(
+        baudRate: 57600,
+        bits: 8,
+        parity: SerialPortParity.none,
+        stopBits: 2,
+        rts: SerialPortRts.on,
+        cts: SerialPortCts.ignore,
+        dtr: SerialPortDtr.on,
+        dsr: SerialPortDsr.ignore,
+        xonXoff: SerialPortXonXoff.disabled,
+      ),
+    );
+  });
 }

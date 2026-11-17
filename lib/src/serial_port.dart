@@ -179,22 +179,38 @@ class SerialPort extends Equatable implements Finalizable {
   /// Applies the non-null settings in [value] to the serial port.
   ///
   /// A `null` property leaves the corresponding native setting unchanged.
-  void setConfig(SerialPortConfig value) {
-    set<T>(int Function(Pointer<sp.Port>, T value) func, T? value) {
-      if (value == null) return;
-      assertReturn(func(_port, value));
-    }
+  ///
+  /// The settings are applied together. This matters for RTS/CTS hardware
+  /// flow control on Linux, Android and macOS, which can only be switched on
+  /// or off for both lines at once: set [SerialPortConfig.rts] and
+  /// [SerialPortConfig.cts] in the same call.
+  void setConfig(SerialPortConfig value) => using((arena) {
+    final ptr = arena<Pointer<sp.PortConfig>>();
+    assertReturn(sp.newConfig(ptr));
+    final config = ptr.value;
 
-    set(sp.setBaudrate, value.baudRate);
-    set(sp.setBits, value.bits);
-    set(sp.setParity, value.parity);
-    set(sp.setStopbits, value.stopBits);
-    set(sp.setRts, value.rts);
-    set(sp.setCts, value.cts);
-    set(sp.setDtr, value.dtr);
-    set(sp.setDsr, value.dsr);
-    set(sp.setXonXoff, value.xonXoff);
-  }
+    try {
+      // A setting left out of the native configuration is left alone.
+      set<T>(int Function(Pointer<sp.PortConfig>, T value) func, T? value) {
+        if (value == null) return;
+        assertReturn(func(config, value));
+      }
+
+      set(sp.setConfigBaudrate, value.baudRate);
+      set(sp.setConfigBits, value.bits);
+      set(sp.setConfigParity, value.parity);
+      set(sp.setConfigStopbits, value.stopBits);
+      set(sp.setConfigRts, value.rts);
+      set(sp.setConfigCts, value.cts);
+      set(sp.setConfigDtr, value.dtr);
+      set(sp.setConfigDsr, value.dsr);
+      set(sp.setConfigXonXoff, value.xonXoff);
+
+      assertReturn(sp.setConfig(_port, config));
+    } finally {
+      sp.freeConfig(config);
+    }
+  });
 
   //#endregion
 
