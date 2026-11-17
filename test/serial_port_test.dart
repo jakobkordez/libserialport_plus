@@ -40,6 +40,19 @@ void main() {
     port.dispose();
   });
 
+  test('Get info for every available port', () {
+    // Descriptions are localized by the OS and may contain non-ASCII
+    // characters, so decoding them must work for whatever is attached.
+    for (final name in SerialPort.getAvailablePorts()) {
+      final port = SerialPort(name);
+      try {
+        expect(port.getInfo().name, name);
+      } finally {
+        port.dispose();
+      }
+    }
+  });
+
   test('Open and close port', () {
     final port = SerialPort(firstPort);
 
